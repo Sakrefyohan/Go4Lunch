@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="activity"
+            type="sakref.yohan.go4lunch.ui.MainActivity" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/family_dinner_wide">
@@ -73,7 +84,9 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/login_button_ID"
+        
+        android:id="@+id/login"
+        android:onClick="@{activity.toaster}"
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
@@ -86,3 +99,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_password_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

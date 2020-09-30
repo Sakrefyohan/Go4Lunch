@@ -1,6 +1,8 @@
 package sakref.yohan.go4lunch.ui;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -15,17 +17,41 @@ import com.facebook.appevents.AppEventsLogger;
 import java.util.Arrays;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.databinding.ActivityConnectionBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     private static final int RC_SIGN_IN = 123;
+    private ActivityConnectionBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityConnectionBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
+        //TODO:Etrange d'avoir deux setContentView ?
+        //Factorization of the method above ?
+        setContentView(binding.getRoot());
+        //
+
+        binding.login.setOnclickListener(new View.OnClickListener(){
+            @Override
+           public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
+
+
+
+    public void toaster(){
+        Toast.makeText(getApplicationContext(),"Hello function toaster",Toast.LENGTH_SHORT).show();
+    }
+
+
 
     /*
     @OnClick(R.id.main_activity_button_login)
