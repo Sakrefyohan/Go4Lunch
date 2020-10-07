@@ -28,31 +28,18 @@ public class MainActivity extends AppCompatActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityConnectionBinding.inflate(getLayoutInflater());
+        binding.setActivity(this);
         View view = binding.getRoot();
         setContentView(view);
 
-        //TODO:Etrange d'avoir deux setContentView ?
-        //Factorization of the method above ?
-        setContentView(binding.getRoot());
-        //
-
-        binding.login.setOnclickListener(new View.OnClickListener(){
-            @Override
-           public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
-            }
+        binding.login.setOnClickListener(view1 -> {
+            Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
         });
-
     }
 
-
-
-    public void toaster(){
-        Toast.makeText(getApplicationContext(),"Hello function toaster",Toast.LENGTH_SHORT).show();
+    public void toaster() {
+        Toast.makeText(getApplicationContext(),"Clicked 2",Toast.LENGTH_SHORT).show();
     }
-
-
-
     /*
     @OnClick(R.id.main_activity_button_login)
     public void onClickLoginButton() {
