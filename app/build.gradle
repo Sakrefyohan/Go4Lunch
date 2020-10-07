@@ -62,4 +62,5 @@ dependencies {
     implementation 'androidx.databinding:databinding-adapters:4.0.2'
     implementation 'androidx.databinding:databinding-runtime:4.0.2'
 
+
 }
