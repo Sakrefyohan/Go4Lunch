@@ -2,7 +2,6 @@ package sakref.yohan.go4lunch.ui;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,26 +27,19 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connection);
-        Button button = (Button) findViewById(R.id.login);
+        binding = ActivityConnectionBinding.inflate(getLayoutInflater());
+        binding.setActivity(this);
+        View view = binding.getRoot();
+        setContentView(view);
 
-        button.setOnClickListener(new View.OnClickListener(){
-            @Override
-           public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
-            }
+        binding.login.setOnClickListener(view1 -> {
+            Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
         });
-
     }
 
-
-
-    public void toaster(){
-        Toast.makeText(getApplicationContext(),"Hello function toaster",Toast.LENGTH_SHORT).show();
+    public void toaster() {
+        Toast.makeText(getApplicationContext(),"Clicked 2",Toast.LENGTH_SHORT).show();
     }
-
-
-
     /*
     @OnClick(R.id.main_activity_button_login)
     public void onClickLoginButton() {
