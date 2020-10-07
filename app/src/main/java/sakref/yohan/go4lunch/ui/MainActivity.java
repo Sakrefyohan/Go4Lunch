@@ -2,6 +2,7 @@ package sakref.yohan.go4lunch.ui;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,16 +28,10 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityConnectionBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(R.layout.activity_connection);
+        Button button = (Button) findViewById(R.id.login);
 
-        //TODO:Etrange d'avoir deux setContentView ?
-        //Factorization of the method above ?
-        setContentView(binding.getRoot());
-        //
-
-        binding.login.setOnclickListener(new View.OnClickListener(){
+        button.setOnClickListener(new View.OnClickListener(){
             @Override
            public void onClick(View v) {
                 Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();

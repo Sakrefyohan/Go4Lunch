@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<!--<layout
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
@@ -7,9 +7,9 @@
             name="activity"
             type="sakref.yohan.go4lunch.ui.MainActivity" />
     </data>
-
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.MainActivity"
@@ -67,10 +67,10 @@
             android:id="@+id/password_password_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:maxLines="1"
             android:textColor="@color/primaryTextColor"/>
     </com.google.android.material.textfield.TextInputLayout>
-
-
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button_facebook"
@@ -99,4 +99,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_password_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+<!--</layout>-->
