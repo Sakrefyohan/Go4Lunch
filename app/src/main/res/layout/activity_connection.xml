@@ -86,7 +86,7 @@
         <Button
 
             android:id="@+id/login"
-            android:onClick="@{(view) -> activity.toaster()}"
+            android:onClick="@{(view) -> activity.startSignInActivity()}"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="200dp"
             android:layout_height="wrap_content"

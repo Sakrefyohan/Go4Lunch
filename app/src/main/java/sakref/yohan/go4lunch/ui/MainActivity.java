@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import com.facebook.FacebookSdk;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity  {
 
         binding.login.setOnClickListener(view1 -> {
             Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
+            this.startSignInActivity();
         });
     }
 
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity  {
     }
  */
 
-    private void startSignInActivity(){
+    public void startSignInActivity(){
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -62,5 +64,12 @@ public class MainActivity extends AppCompatActivity  {
                         .build(),
                 RC_SIGN_IN);
     }
+
+        //Link to instruction : https://firebase.google.com/docs/auth/android/google-signin#java
+    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            // ID oAuth2.0 : 357917711083-1r19llakmll6vuegenf728e9c60i8fnc.apps.googleusercontent.com
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build();
 
 }
