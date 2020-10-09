@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import com.facebook.FacebookSdk;
@@ -32,21 +33,17 @@ public class MainActivity extends AppCompatActivity  {
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.login.setOnClickListener(view1 -> {
-            Toast.makeText(getApplicationContext(),"Clicked",Toast.LENGTH_SHORT).show();
-        });
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
     }
 
     public void toaster() {
         Toast.makeText(getApplicationContext(),"Clicked 2",Toast.LENGTH_SHORT).show();
     }
-    /*
-    @OnClick(R.id.main_activity_button_login)
-    public void onClickLoginButton() {
-        // 3 - Launch Sign-In Activity when user clicked on Login Button
-        this.startSignInActivity();
-    }
- */
+
 
     private void startSignInActivity(){
         startActivityForResult(
