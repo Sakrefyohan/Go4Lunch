@@ -14,6 +14,8 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.Login;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.firebase.ui.auth.AuthUI;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         binding.setActivity(this);
         View view = binding.getRoot();
         setContentView(view);
+        initFacebook();
 
     }
 
@@ -86,90 +89,88 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(sign, RC_SIGN_IN);
 
     }
-/**
+
     public void signInFacebook() {
-        // Initialize Facebook Login button
+        //Initialize Facebook Login button
+        LoginManager.getInstance().logInWithReadPermissions(MainActivity.this, Arrays.asList("public_profile", "user_friends"));
+
+
+    }
+
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+    }
+
+    public void initFacebook() {
+
         mCallbackManager = CallbackManager.Factory.create();
 
-        //   binding.login_facebook.setReadPermissions("email", "public_profile");
-        //   binding.login_facebook.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-        //        @Override
-        //        public void onSuccess(LoginResult loginResult) {
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("Success", "Login");
 
-          handleFacebookAccessToken(loginResult.getAccessToken());
-        Log.d(TAG, "facebook:onSuccess:" + loginResult);
-        GoogleSignInOptions gso = new GoogleSignInOptions.
-                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
-                build();
+                    }
 
-        GoogleSignInClient googleSignInClient = GoogleSignIn
-                .getClient(MainActivity.this, gso);
-        googleSignInClient.signOut();
-        finish();
-        startActivity(new Intent(MainActivity.this, MainActivity.class));
-        Toast.makeText(MainActivity.this,
-                "You successfully signed-in ", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(MainActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(MainActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
     }
 
-    @Override
-    public void onCancel() {
-        Log.d(TAG, "facebook:onCancel");
-        // ...
-    }
-
-    @Override
-    public void onError(FacebookException error) {
-        Log.d(TAG, "facebook:onError", error);
-        // ...
-    }
-});
-
-
-        }
-
- */
-private void handleFacebookAccessToken(AccessToken token){
-        Log.d(TAG,"handleFacebookAccessToken:"+token);
-
-        AuthCredential credential=FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-        .addOnCompleteListener(this,new OnCompleteListener<AuthResult>(){
-@Override
-public void onComplete(@NonNull Task<AuthResult> task){
-        if(task.isSuccessful()){
-        // Sign in success, update UI with the signed-in user's information
-        Log.d(TAG,"signInWithCredential:success");
-        FirebaseUser user=mAuth.getCurrentUser();
-
-        }else{
-        // If sign in fails, display a message to the user.
-        Log.w(TAG,"signInWithCredential:failure",task.getException());
-        Toast.makeText(MainActivity.this,"Authentication failed.",
-        Toast.LENGTH_SHORT).show();
-
-        }
-        }
-        });
-        }
-
-
-private void startSignInActivity(){
+    private void startSignInActivity() {
         startActivityForResult(
-        AuthUI.getInstance()
-        .createSignInIntentBuilder()
-        .setTheme(R.style.LoginTheme)
-        .setAvailableProviders(
-        Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
-        new AuthUI.IdpConfig.GoogleBuilder().build(), //GOOGLE
-        new AuthUI.IdpConfig.FacebookBuilder().build())) // FACEBOOK
-        .setIsSmartLockEnabled(false,true)
-        .setLogo(R.drawable.ic_logo_login)
-        .build(),
-        RC_SIGN_IN);
-        }
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.LoginTheme)
+                        .setAvailableProviders(
+                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
+                                        new AuthUI.IdpConfig.GoogleBuilder().build(), //GOOGLE
+                                        new AuthUI.IdpConfig.FacebookBuilder().build())) // FACEBOOK
+                        .setIsSmartLockEnabled(false, true)
+                        .setLogo(R.drawable.ic_logo_login)
+                        .build(),
+                RC_SIGN_IN);
+    }
 
-public void toaster(){
-        Toast.makeText(getApplicationContext(),"Clicked 2",Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        }
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void toaster() {
+        Toast.makeText(getApplicationContext(), "Clicked 2", Toast.LENGTH_SHORT).show();
+    }
+
+}
