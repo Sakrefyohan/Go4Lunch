@@ -34,6 +34,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Arrays;
 
+import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivityConnectionBinding;
 
 public class ConnectionActivity extends AppCompatActivity {
@@ -87,14 +88,15 @@ public class ConnectionActivity extends AppCompatActivity {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("357917711083-1r19llakmll6vuegenf728e9c60i8fnc.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (signInAccount != null) {
-            startActivity(new Intent(this, ConnectionActivity.class));
+            startActivity(new Intent(this, MainActivity2.class));
+            return;
         }
         Intent sign = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(sign, RC_SIGN_IN);
@@ -158,7 +160,6 @@ public class ConnectionActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -174,7 +175,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                startActivity(new Intent(getApplicationContext(), ConnectionActivity.class));
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 Toast.makeText(getApplicationContext(),
                                         "Connected by your Google account",
                                         Toast.LENGTH_SHORT).show();

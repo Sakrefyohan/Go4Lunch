@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "587084817917-emkq1detv4p1kcdv3vtpl2da1nku4bp0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sakref.yohan.go4lunch",
+            "certificate_hash": "8ba6593a337a18d4837f0cb2354032deb2eb723d"
+          }
+        },
+        {
           "client_id": "587084817917-6bgomjfaubuc4gjn4a5a1slhbi59rue0.apps.googleusercontent.com",
           "client_type": 3
         }
