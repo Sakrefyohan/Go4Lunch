@@ -95,7 +95,7 @@ public class ConnectionActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (signInAccount != null) {
-            startActivity(new Intent(this, MainActivity2.class));
+            startActivity(new Intent(this, MainActivity.class));
             return;
         }
         Intent sign = mGoogleSignInClient.getSignInIntent();
@@ -144,6 +144,19 @@ public class ConnectionActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+                        Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                        GoogleSignInOptions gso = new GoogleSignInOptions.
+                                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
+                                build();
+
+                        GoogleSignInClient googleSignInClient = GoogleSignIn
+                                .getClient(ConnectionActivity.this, gso);
+                        googleSignInClient.signOut();
+                        finish();
+                        startActivity(new Intent(ConnectionActivity.this, MainActivity.class));
+                        Toast.makeText(ConnectionActivity.this,
+                                "Facebook Connection Established ", Toast.LENGTH_SHORT).show();
 
                     }
 

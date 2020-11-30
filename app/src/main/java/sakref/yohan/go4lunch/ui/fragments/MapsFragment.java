@@ -17,9 +17,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.viewmodels.HomeViewModel;
 
 public class MapsFragment extends Fragment {
-
 
     public static MapsFragment newInstance() {
         MapsFragment fragmentMap = new MapsFragment();
@@ -45,6 +45,8 @@ public class MapsFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
+
+    private HomeViewModel homeViewModel;
 
     @Nullable
     @Override

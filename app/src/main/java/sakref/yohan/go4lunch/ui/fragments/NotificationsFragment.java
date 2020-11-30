@@ -1,4 +1,4 @@
-package sakref.yohan.go4lunch.ui.ui.notifications;
+package sakref.yohan.go4lunch.ui.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.viewmodels.NotificationsViewModel;
 
 public class NotificationsFragment extends Fragment {
 
