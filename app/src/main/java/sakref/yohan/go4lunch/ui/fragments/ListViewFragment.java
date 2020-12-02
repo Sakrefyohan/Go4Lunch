@@ -13,19 +13,20 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.viewmodels.NotificationsViewModel;
+import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
 
-public class NotificationsFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
+public class ListViewFragment extends Fragment {
+
+    private ListviewViewModel mListviewViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        mListviewViewModel =
+                ViewModelProviders.of(this).get(ListviewViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        final TextView textView = root.findViewById(R.id.text_dashboard);
+        mListviewViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

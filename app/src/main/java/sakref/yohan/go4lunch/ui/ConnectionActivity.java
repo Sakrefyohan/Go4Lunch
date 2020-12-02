@@ -213,4 +213,11 @@ public class ConnectionActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Clicked 2", Toast.LENGTH_SHORT).show();
     }
 
+    public void signup(){
+        startActivity(new Intent(getApplicationContext(), EmailPasswordActivity.class));
+        Toast.makeText(getApplicationContext(),
+                "Create a new account",
+                Toast.LENGTH_SHORT).show();
+    }
+
 }

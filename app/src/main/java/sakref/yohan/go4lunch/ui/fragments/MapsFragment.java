@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.viewmodels.HomeViewModel;
+import sakref.yohan.go4lunch.viewmodels.MapsViewModel;
 
 public class MapsFragment extends Fragment {
 
@@ -46,7 +46,7 @@ public class MapsFragment extends Fragment {
         }
     };
 
-    private HomeViewModel homeViewModel;
+    private MapsViewModel mMapsViewModel;
 
     @Nullable
     @Override
