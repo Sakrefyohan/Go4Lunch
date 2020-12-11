@@ -45,7 +45,7 @@
 
     <!-- Connection EmailPassword Activity -->
 
-    <string name="app_name">Firebase Authentication</string>
+    <string name="app_name2">Firebase Authentication</string>
 
     <string name="label_google_sign_in">Firebase + Google Sign In</string>
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
@@ -148,35 +148,9 @@
 
     <string name="error_sign_in_failed">Sign in failed, see logs for details.</string>
     <string name="multi_factor_signed_out">You are not signed in. To use this sample, first navigate to the Email/Password example to sign in and then return here to enroll in multi-factor auth.</string>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <string name="createUserWithEmailFailur">The email address is already in use by another account.</string>
+    <string name="signInWithEmailFailure">The password is invalid or the user does not have a password.</string>
+    <string name="signInWithEmailFailureVerify">Please, verify your mail before continuing</string>
 
 
 </resources>

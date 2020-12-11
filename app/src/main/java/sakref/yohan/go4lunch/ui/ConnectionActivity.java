@@ -56,6 +56,7 @@ public class ConnectionActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         initFacebook();
+        mAuth.useAppLanguage();
 
     }
 
@@ -105,7 +106,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public void signInFacebook() {
         //Initialize Facebook Login button
-        LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
 
 
     }
@@ -123,6 +124,8 @@ public class ConnectionActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            finish();
+                            startActivity(new Intent(ConnectionActivity.this, MainActivity.class));
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -146,15 +149,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         Log.d("Success", "Login");
                         handleFacebookAccessToken(loginResult.getAccessToken());
                         Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                        GoogleSignInOptions gso = new GoogleSignInOptions.
-                                Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
-                                build();
 
-                        GoogleSignInClient googleSignInClient = GoogleSignIn
-                                .getClient(ConnectionActivity.this, gso);
-                        googleSignInClient.signOut();
-                        finish();
-                        startActivity(new Intent(ConnectionActivity.this, MainActivity.class));
                         Toast.makeText(ConnectionActivity.this,
                                 "Facebook Connection Established ", Toast.LENGTH_SHORT).show();
 
@@ -213,11 +208,68 @@ public class ConnectionActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Clicked 2", Toast.LENGTH_SHORT).show();
     }
 
+    public void signin(){
+
+        String email = binding.loginEmailText.getText().toString();
+        String password = binding.passwordPasswordText.getText().toString();
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user.isEmailVerified()) {
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            }else{
+                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     public void signup(){
-        startActivity(new Intent(getApplicationContext(), EmailPasswordActivity.class));
-        Toast.makeText(getApplicationContext(),
-                "Create a new account",
-                Toast.LENGTH_SHORT).show();
+
+        String email = binding.loginEmailText.getText().toString();
+        String password = binding.passwordPasswordText.getText().toString();
+
+        Log.d(TAG, "Getting Information : " + email + " / " + password );
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            user.sendEmailVerification();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            Toast.makeText(getApplicationContext(),
+                                    "Create a new account",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
     }
 
 }
+

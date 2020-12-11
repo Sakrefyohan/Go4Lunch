@@ -47,7 +47,7 @@ dependencies {
     //Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
     implementation 'com.google.firebase:firebase-auth:20.0.1'
-    implementation 'com.firebaseui:firebase-ui-auth:6.3.0'
+    implementation 'com.firebaseui:firebase-ui-auth:7.1.0'
     implementation 'com.firebaseui:firebase-ui-firestore:6.3.0'
 
     // Import the BoM for the Firebase platform
@@ -74,6 +74,7 @@ dependencies {
     implementation 'androidx.databinding:databinding-adapters:4.1.1'
     implementation 'androidx.databinding:databinding-runtime:4.1.1'
 
-
+    //Google Place APIs
+    implementation 'com.google.android.libraries.places:places:2.4.0'
 
 }
