@@ -13,10 +13,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.utils.NetworkAsyncTask;
 import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
 
 
-public class ListViewFragment extends Fragment {
+public class ListViewFragment extends Fragment implements NetworkAsyncTask.Listeners {
 
     private ListviewViewModel mListviewViewModel;
 
@@ -24,7 +25,7 @@ public class ListViewFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         mListviewViewModel =
                 ViewModelProviders.of(this).get(ListviewViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View root = inflater.inflate(R.layout.fragment_view, container, false);
         final TextView textView = root.findViewById(R.id.text_dashboard);
         mListviewViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -32,6 +33,39 @@ public class ListViewFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        this.executeHttpRequest();
         return root;
+    }
+
+    private void executeHttpRequest(){
+        new NetworkAsyncTask(this).execute("https://api.github.com/users/JakeWharton/following");
+    }
+
+    @Override
+    public void onPreExecute() {
+        this.updateUIWhenStartingHTTPRequest();
+    }
+
+    @Override
+    public void doInBackground() {
+
+    }
+
+    @Override
+    public void onPostExecute(String json) {
+        this.updateUIWhenStopingHTTPRequest(json);
+    }
+
+    // ------------------
+    //  UPDATE UI
+    // ------------------
+
+    private void updateUIWhenStartingHTTPRequest(){
+        this.textView.setText("Downloading...");
+    }
+
+    private void updateUIWhenStopingHTTPRequest(String response){
+        this.textView.setText(response);
     }
 }

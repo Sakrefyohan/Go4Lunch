@@ -23,7 +23,7 @@ public class WorkmatesFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         mWorkmatesViewModel =
                 ViewModelProviders.of(this).get(WorkmatesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View root = inflater.inflate(R.layout.fragment_workmates, container, false);
         final TextView textView = root.findViewById(R.id.text_notifications);
         mWorkmatesViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override

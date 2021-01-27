@@ -15,11 +15,11 @@
         android:id="@+id/navigation_dashboard"
         android:name="sakref.yohan.go4lunch.ui.fragments.ListViewFragment"
         android:label="@string/title_listview"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_view" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="sakref.yohan.go4lunch.ui.fragments.WorkmatesFragment"
         android:label="@string/title_workmates"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_workmates" />
 </navigation>
