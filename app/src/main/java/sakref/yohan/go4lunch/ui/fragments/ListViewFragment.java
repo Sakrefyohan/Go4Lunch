@@ -13,11 +13,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.utils.NetworkAsyncTask;
 import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
 
 
-public class ListViewFragment extends Fragment implements NetworkAsyncTask.Listeners {
+public class ListViewFragment extends Fragment {
 
     private ListviewViewModel mListviewViewModel;
 
@@ -34,38 +33,8 @@ public class ListViewFragment extends Fragment implements NetworkAsyncTask.Liste
             }
         });
 
-        this.executeHttpRequest();
         return root;
     }
 
-    private void executeHttpRequest(){
-        new NetworkAsyncTask(this).execute("https://api.github.com/users/JakeWharton/following");
-    }
 
-    @Override
-    public void onPreExecute() {
-        this.updateUIWhenStartingHTTPRequest();
-    }
-
-    @Override
-    public void doInBackground() {
-
-    }
-
-    @Override
-    public void onPostExecute(String json) {
-        this.updateUIWhenStopingHTTPRequest(json);
-    }
-
-    // ------------------
-    //  UPDATE UI
-    // ------------------
-
-    private void updateUIWhenStartingHTTPRequest(){
-        this.textView.setText("Downloading...");
-    }
-
-    private void updateUIWhenStopingHTTPRequest(String response){
-        this.textView.setText(response);
-    }
 }
