@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
 import sakref.yohan.go4lunch.viewmodels.MapsViewModel;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -107,6 +109,8 @@ public class MapsFragment extends Fragment {
             LatLng town = new LatLng(45.7342, 4.8241);
             googleMap.addMarker(new MarkerOptions().position(town).title("Marker in Lyon"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(town));
+
+
         }
     };
 
@@ -117,6 +121,10 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        mMapsViewModel =
+                ViewModelProviders.of(this).get(MapsViewModel.class);
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -128,5 +136,6 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        mMapsViewModel.getPlaces().observe(getViewLifecycleOwner(),places -> Log.d(TAG, "onMapReady: Places:" + places.getResults().size()));
     }
 }

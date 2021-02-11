@@ -43,6 +43,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private final String TAG = "connection";
     private ActivityConnectionBinding binding;
     private FirebaseAuth mAuth;
+    private String userConnected;
     private CallbackManager mCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -62,15 +63,34 @@ public class ConnectionActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
+        mAuth = FirebaseAuth.getInstance();
         // Check if user is signed in (non-null) and update UI accordingly.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+       // Log.d(TAG, "onStart: " + user.getEmail() + "/" + user.getDisplayName());
+        if (user != null || account != null){
+            if (user != null){
+                userConnected = user.getEmail();
+            }else if (account != null ){
+                userConnected = account.getEmail();
+            }else {
+                Log.d(TAG, "onStart: No user Connected");
+            }
+
+            Toast.makeText(this, "Connected with : " + userConnected, Toast.LENGTH_LONG).show();
+            //startActivity(new Intent(this, MainActivity.class));
+        } else {
+            Log.d(TAG, "onStart: No user Connected");
+        }
         super.onStart();
     }
 
     @Override
     protected void onDestroy() {
         // FIREBASE LOGOUT
-        FirebaseAuth.getInstance().signOut();
+        mAuth.signOut();
         // GOOGLE LOGOUT
         gso = new GoogleSignInOptions.
                 Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
@@ -85,7 +105,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     // GOOGLE SIGN IN CONFIG -----------------------------------------------------------------------
     public void signInGoogle() {
-        mAuth = FirebaseAuth.getInstance();
+        mAuth.getCurrentUser();
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,6 +129,36 @@ public class ConnectionActivity extends AppCompatActivity {
         LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
 
 
+    }
+
+    public void signin(){
+
+        String email = binding.loginEmailText.getText().toString();
+        String password = binding.passwordPasswordText.getText().toString();
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user.isEmailVerified()) {
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            }else{
+                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
 
@@ -208,35 +258,7 @@ public class ConnectionActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Clicked 2", Toast.LENGTH_SHORT).show();
     }
 
-    public void signin(){
 
-        String email = binding.loginEmailText.getText().toString();
-        String password = binding.passwordPasswordText.getText().toString();
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user.isEmailVerified()) {
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            }else{
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 
     public void signup(){
 
