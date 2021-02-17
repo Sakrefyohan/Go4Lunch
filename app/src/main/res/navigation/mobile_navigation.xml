@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_mapview">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_mapview"
         android:name="sakref.yohan.go4lunch.ui.fragments.MapsFragment"
         android:label="@string/title_mapview"
         tools:layout="@layout/fragment_maps" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_listview"
         android:name="sakref.yohan.go4lunch.ui.fragments.ListViewFragment"
         android:label="@string/title_listview"
         tools:layout="@layout/fragment_view" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_workmates"
         android:name="sakref.yohan.go4lunch.ui.fragments.WorkmatesFragment"
         android:label="@string/title_workmates"
         tools:layout="@layout/fragment_workmates" />

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.common.api.ApiException;
@@ -52,8 +55,6 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MapsFragment extends Fragment {
 
-
-
     public static MapsFragment newInstance() {
         MapsFragment fragmentMap = new MapsFragment();
         return fragmentMap;
@@ -73,44 +74,9 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            Places.initialize(getActivity().getApplicationContext(), String.valueOf(R.string.google_maps_key));
-            PlacesClient placesClient = Places.createClient(getContext().getApplicationContext());
-
-            // Use fields to define the data types to return.
-            List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
-
-// Use the builder to create a FindCurrentPlaceRequest.
-            FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
-
-// Call findCurrentPlace and handle the response (first check that the user has granted permission).
-            if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-                placeResponse.addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FindCurrentPlaceResponse response = task.getResult();
-                        for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                            Log.i(TAG, String.format("Place '%s' has likelihood: %f",
-                                    placeLikelihood.getPlace().getName(),
-                                    placeLikelihood.getLikelihood()));
-                        }
-                    } else {
-                        Exception exception = task.getException();
-                        if (exception instanceof ApiException) {
-                            ApiException apiException = (ApiException) exception;
-                            Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                        }
-                    }
-                });
-            } else {
-                // A local method to request required permissions;
-                // See https://developer.android.com/training/permissions/requesting
-                Log.d(TAG, "onMapReady: SHIT DAFUK NO PERMISSION BRO");
-            }
-            LatLng town = new LatLng(45.7342, 4.8241);
-            googleMap.addMarker(new MarkerOptions().position(town).title("Marker in Lyon"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(town));
-
-
+            LatLng sydney = new LatLng(-34, 151);
+            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
 
@@ -121,10 +87,6 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        mMapsViewModel =
-                ViewModelProviders.of(this).get(MapsViewModel.class);
-
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -136,6 +98,5 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-        mMapsViewModel.getPlaces().observe(getViewLifecycleOwner(),places -> Log.d(TAG, "onMapReady: Places:" + places.getResults().size()));
     }
 }

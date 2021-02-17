@@ -65,22 +65,14 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void onStart() {
 
         mAuth = FirebaseAuth.getInstance();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
        // Log.d(TAG, "onStart: " + user.getEmail() + "/" + user.getDisplayName());
-        if (user != null || account != null){
-            if (user != null){
-                userConnected = user.getEmail();
-            }else if (account != null ){
-                userConnected = account.getEmail();
-            }else {
-                Log.d(TAG, "onStart: No user Connected");
-            }
-
+        if (user != null ){
+            userConnected = user.getEmail();
+            Log.d(TAG, "onStart: Connected with " + userConnected);
             Toast.makeText(this, "Connected with : " + userConnected, Toast.LENGTH_LONG).show();
-            //startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
         } else {
             Log.d(TAG, "onStart: No user Connected");
         }
