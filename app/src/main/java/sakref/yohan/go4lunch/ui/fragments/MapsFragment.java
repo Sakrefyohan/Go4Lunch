@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -34,7 +36,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
@@ -45,6 +46,9 @@ import java.util.Collections;
 import java.util.List;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.models.OpeningHours;
+import sakref.yohan.go4lunch.models.Places;
+import sakref.yohan.go4lunch.repository.PlacesRepository;
 import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
 import sakref.yohan.go4lunch.viewmodels.MapsViewModel;
 
@@ -54,6 +58,13 @@ import static android.content.ContentValues.TAG;
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MapsFragment extends Fragment {
+
+    public MapsViewModel mapsViewModel;
+    public LatLng mPlaces;
+    public String pName;
+    public int pSize;
+    public double pLat;
+    public double pLng;
 
     public static MapsFragment newInstance() {
         MapsFragment fragmentMap = new MapsFragment();
@@ -74,13 +85,24 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+            mapsViewModel.getPlaces().observe(getViewLifecycleOwner(),(places) -> {
+                Log.d(TAG, "onViewCreated: Restaurant : " + places.getResults().get(0).getName());
+                pSize = places.getResults().size();
+                for(int j = 0 ; j < pSize ; j++){
+                    pName = places.getResults().get(j).getName();
+                    pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
+                    pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
+                    mPlaces = new LatLng(pLat,pLng);
+                    googleMap.addMarker(new MarkerOptions().position(mPlaces).title(pName));
+                    Log.d(TAG, "onViewCreated: onMapReady : " + pSize + " / " + pName + " / " + pLat + " / " + pLng);
+
+                }
+            });
         }
     };
 
-    private MapsViewModel mMapsViewModel;
+
 
     @Nullable
     @Override
@@ -88,6 +110,8 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_maps, container, false);
+
+
     }
 
     @Override
@@ -95,8 +119,15 @@ public class MapsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapsViewModel = new ViewModelProvider(this).get(MapsViewModel.class);
+
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+
+
+
+
     }
 }

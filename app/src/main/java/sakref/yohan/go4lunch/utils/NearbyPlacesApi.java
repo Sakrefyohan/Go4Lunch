@@ -12,12 +12,12 @@ import sakref.yohan.go4lunch.models.Places;
  */
 
 public interface NearbyPlacesApi {
-
-    //After the json : radius=1500&type=restaurant&key=AIzaSyBoCsMWKLLF8WnNGK9Movq400WNYu1jR3I
+    // test : https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s
+    //After the json : radius=1500&type=restaurant&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s
     @GET("nearbysearch/json?")
     Call<Places> getNearbyRestaurants(@Query("location") String location,
-                                                                      @Query("radius") int radius,
-                                                                      @Query("type") String type,
-                                                                      @Query("key") String key);
+                                      @Query("radius") int radius,
+                                      @Query("type") String type,
+                                      @Query("key") String key);
 
 }
