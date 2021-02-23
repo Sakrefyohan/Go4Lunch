@@ -87,7 +87,7 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
 
             mapsViewModel.getPlaces().observe(getViewLifecycleOwner(),(places) -> {
-                Log.d(TAG, "onViewCreated: Restaurant : " + places.getResults().get(0).getName());
+
                 pSize = places.getResults().size();
                 for(int j = 0 ; j < pSize ; j++){
                     pName = places.getResults().get(j).getName();
@@ -95,7 +95,7 @@ public class MapsFragment extends Fragment {
                     pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
                     mPlaces = new LatLng(pLat,pLng);
                     googleMap.addMarker(new MarkerOptions().position(mPlaces).title(pName));
-                    Log.d(TAG, "onViewCreated: onMapReady : " + pSize + " / " + pName + " / " + pLat + " / " + pLng);
+
 
                 }
             });
