@@ -18,6 +18,7 @@ public class MapsViewModel extends ViewModel {
 
     private LiveData<Places> mPlaces;
     private PlacesRepository mPlacesRepository;
+    private MapsFragment mapsFragment;
     private static final String TAG = "MapsViewModel";
 
 
