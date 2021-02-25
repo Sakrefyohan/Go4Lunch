@@ -79,6 +79,7 @@ public class MapsFragment extends Fragment {
     public int pSize;
     public double pLat;
     public double pLng;
+    GoogleMap map;
     FusedLocationProviderClient fusedLocationProviderClient;
 
     public static MapsFragment newInstance() {
@@ -106,7 +107,10 @@ public class MapsFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
 
+
+
             mapsViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
+
 
                 pSize = places.getResults().size();
                 for (int j = 0; j < pSize; j++) {
@@ -125,6 +129,10 @@ public class MapsFragment extends Fragment {
             if (ActivityCompat.checkSelfPermission(getActivity()
                     , ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                map = googleMap;
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                map.setMyLocationEnabled(true);
+                Log.d(TAG, "onMapReady: isMyLocationEnabled ? " + map.isMyLocationEnabled() );
                 getCurrentLocation();
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 44);
@@ -134,10 +142,12 @@ public class MapsFragment extends Fragment {
         }
     };
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == 100 && grantResults.length > 0 && (grantResults[0] + grantResults[1] 
         == PackageManager.PERMISSION_GRANTED)){
+            map.setMyLocationEnabled(true);
             getCurrentLocation();
 
         }else {
