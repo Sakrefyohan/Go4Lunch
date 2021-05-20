@@ -1,12 +1,9 @@
 package sakref.yohan.go4lunch.ui.fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,64 +13,38 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.models.OpeningHours;
-import sakref.yohan.go4lunch.models.Places;
-import sakref.yohan.go4lunch.repository.PlacesRepository;
-import sakref.yohan.go4lunch.ui.MainActivity;
-import sakref.yohan.go4lunch.viewmodels.ListviewViewModel;
-import sakref.yohan.go4lunch.viewmodels.MapsViewModel;
+import sakref.yohan.go4lunch.models.Photo;
+import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.content.ContentValues.TAG;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MapsFragment extends Fragment {
 
-    public MapsViewModel mapsViewModel;
+    public MainViewModel mainViewModel;
     public LatLng mPlaces;
     public String pName;
     public int pSize;
@@ -106,26 +77,6 @@ public class MapsFragment extends Fragment {
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
-
-
-
-            mapsViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
-
-
-                pSize = places.getResults().size();
-                for (int j = 0; j < pSize; j++) {
-                    pName = places.getResults().get(j).getName();
-                    pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
-                    pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
-                    mPlaces = new LatLng(pLat, pLng);
-                    googleMap.addMarker(new MarkerOptions().position(mPlaces).title(pName));
-
-
-                }
-            });
-
-
-
             if (ActivityCompat.checkSelfPermission(getActivity()
                     , ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -169,19 +120,30 @@ public class MapsFragment extends Fragment {
                 public void onComplete(@NonNull Task<Location> task) {
                     Location location = task.getResult();
                     if (location != null) {
-                        try {
-                            Geocoder geocoder = new Geocoder(getActivity(),
-                                    Locale.getDefault());
 
-                            List<Address> addresses = geocoder.getFromLocation(
-                                    location.getLatitude(), location.getLongitude(), 1
-                            );
-                            Log.d(TAG, "onComplete: getLocation : " + addresses.get(0).getLatitude());
-                            Log.d(TAG, "onComplete: getLocation : " + addresses.get(0).getLongitude());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        mainViewModel.FetchRestaurant(location);
 
+
+
+                        Log.d(TAG, "onComplete: Places Get --> " + mainViewModel.getPlaces());
+                        mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
+
+                            pSize = places.getResults().size();
+                            for (int j = 0; j < pSize; j++) {
+                                pName = places.getResults().get(j).getName();
+                                Log.d(TAG, "onComplete: name = " + pName);
+                                pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
+                                pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
+                                mPlaces = new LatLng(pLat, pLng);
+                                map.addMarker(new MarkerOptions().position(mPlaces).title(pName));
+                                int mPhotosWidth = places.getResults().get(j).getPhotos().get(0).getWidth();
+                                String mPhotosReference = places.getResults().get(j).getPhotos().get(0).getPhotoReference();
+                                mainViewModel.FetchPhotos(mPhotosReference, mPhotosWidth);
+                                mainViewModel.getPhotos();
+
+
+                            }
+                        });
                     }else {
                         LocationRequest locationRequest = new LocationRequest()
                                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -192,10 +154,9 @@ public class MapsFragment extends Fragment {
                             @Override
                             public void onLocationResult(LocationResult locationResult) {
                                 Location location1 = locationResult.getLastLocation();
-
                                 String vLatitude = String.valueOf(location1.getLatitude());
                                 String vLongitude = String.valueOf(location1.getLongitude());
-                                Intent intent = new Intent(getActivity(),MapsViewModel.class);
+                                Intent intent = new Intent(getActivity(), MainViewModel.class);
                                 intent.putExtra("vLatitude", vLatitude);
                                 intent.putExtra("vLongitude",vLongitude);
                                 Log.d(TAG, "onLocationResult: Latitude : " + vLatitude);
@@ -223,7 +184,13 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        Log.d(TAG, "onCreateView: init mainViewModel : " + mainViewModel);
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
+
 
 
     }
@@ -233,15 +200,9 @@ public class MapsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapsViewModel = new ViewModelProvider(this).get(MapsViewModel.class);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-
-
-
-
     }
 }
