@@ -20,6 +20,7 @@ import java.util.List;
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewBinding;
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
+import sakref.yohan.go4lunch.models.Photo;
 import sakref.yohan.go4lunch.models.Result;
 import sakref.yohan.go4lunch.ui.viewholder.ListViewFragmentViewHolder;
 
@@ -30,6 +31,7 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
 
 
     private List<Result> restaurants;
+    private List<Photo> photos;
 
     public ListViewFragmentAdapters(List<Result> restaurants) {
         this.restaurants = restaurants;
@@ -47,6 +49,7 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
     @Override
     public void onBindViewHolder(@NonNull @NotNull ListViewFragmentViewHolder holder, int position) {
         holder.bind(restaurants.get(position));
+
 
     }
 

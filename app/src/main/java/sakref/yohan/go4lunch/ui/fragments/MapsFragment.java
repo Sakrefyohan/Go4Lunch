@@ -136,10 +136,10 @@ public class MapsFragment extends Fragment {
                                 pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
                                 mPlaces = new LatLng(pLat, pLng);
                                 map.addMarker(new MarkerOptions().position(mPlaces).title(pName));
-                                int mPhotosWidth = places.getResults().get(j).getPhotos().get(0).getWidth();
-                                String mPhotosReference = places.getResults().get(j).getPhotos().get(0).getPhotoReference();
-                                mainViewModel.FetchPhotos(mPhotosReference, mPhotosWidth);
-                                mainViewModel.getPhotos();
+                                //int mPhotosWidth = places.getResults().get(j).getPhotos().get(0).getWidth();
+                                //String mPhotosReference = places.getResults().get(j).getPhotos().get(0).getPhotoReference();
+                                //mainViewModel.FetchPhotos(mPhotosReference, mPhotosWidth);
+                                //mainViewModel.getPhotos();
 
 
                             }

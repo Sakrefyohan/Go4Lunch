@@ -10,15 +10,17 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="left"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -30,24 +32,28 @@
                 android:id="@+id/fragment_main_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0"
                 android:padding="5dp"
                 android:text="Nom du Restau"
+                android:textSize="20dp"
+                android:singleLine="true"
                 android:textAlignment="gravity" />
 
             <TextView
                 android:id="@+id/fragment_main_item_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="59 rue de L'adresse LOOONG"
+                android:layout_weight="0"
+                android:padding="8dp"
+                android:text="59 rue de L'adresse LOOOOOOOOOOOOOOOOONG"
+                android:singleLine="true"
                 android:textAlignment="gravity" />
 
             <TextView
                 android:id="@+id/fragment_main_item_opening"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:padding="5dp"
                 android:text="Ouverture 24/7" />
 
@@ -56,7 +62,7 @@
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:gravity="right"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -68,14 +74,17 @@
                 android:id="@+id/fragment_main_item_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:padding="5dp"
                 android:text="120m"
+                android:textSize="15dp"
                 android:textAlignment="viewEnd" />
 
             <TextView
                 android:id="@+id/fragment_main_item_people"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:padding="5dp"
                 android:text="nb personne"
                 android:textAlignment="viewEnd" />
@@ -84,6 +93,7 @@
                 android:id="@+id/fragment_main_item_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:padding="5dp"
                 android:text="3etoiles"
                 android:textAlignment="viewEnd" />
@@ -92,14 +102,22 @@
 
         <ImageView
             android:id="@+id/fragment_main_item_photo"
-            android:layout_width="98dp"
-            android:layout_height="89dp"
-            android:layout_margin="5dp"
-            android:padding="5dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </layout>

@@ -9,7 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 
+import java.util.Random;
+
+import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
+import sakref.yohan.go4lunch.models.Photo;
 import sakref.yohan.go4lunch.models.Result;
 import sakref.yohan.go4lunch.ui.adapters.ListViewFragmentAdapters;
 import sakref.yohan.go4lunch.ui.fragments.ListViewFragment;
@@ -24,6 +28,7 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder{
     TextView mDistance;
     TextView mPeople;
     ImageView mPhoto;
+    String API;
 
 
 
@@ -43,21 +48,36 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder{
         //setText
         mName.setText(result.getName());
         mAdress.setText(result.getVicinity());
+
         /*Boolean nIsOpen = result.getOpeningHours().getOpenNow();
         if (nIsOpen){
             mIsOpen.setText("Open 24/7");
         }else{
             mIsOpen.setText("Closed Now");
         }*/
-        mRating.setText(String.valueOf(result.getRating().toString()));
+        if (result.getRating() != null) {
+            mRating.setText(String.valueOf(result.getRating().toString()));
+        }else{
+            mRating.setText("");
+        }
 
-        Glide.with(mPhoto).load(result.getPhotos().get(0).getPhotoReference()).into(mPhoto);
-        Log.d(TAG, "bind: mPhoto : " + result.getPhotos());
-        Log.d(TAG, "bind: mPhoto - photo reference : " + result.getPhotos().get(0).getPhotoReference());
-        Log.d(TAG, "bind: mPhoto - size  : " + result.getPhotos().size());
-        Log.d(TAG, "bind: mPhoto - html: " + result.getPhotos().get(0).getHtmlAttributions());
-        Log.d(TAG, "bind: mPhoto - Height: " + result.getPhotos().get(0).getHeight());
-        Log.d(TAG, "bind: mPhoto - width: " + result.getPhotos().get(0).getWidth());
+        if(result.getPhotos() != null) {
+            int mRefSize = result.getPhotos().size();
+            String mRef = result.getPhotos().get(mRefSize-1).getPhotoReference();
+            Log.d(TAG, "bind: mRefSize : " + mRefSize);
+            Log.d(TAG, "bind: mPhoto : https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s");
+            API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
+            //
+        }else{
+            mPhoto.setImageResource(R.drawable.ic_no_image);
+        }
+
+        Glide
+                .with(mPhoto.getContext())
+                .load(API)
+                .centerCrop()
+                .error(R.drawable.ic_no_image)
+                .into(mPhoto);
 
     }
 
