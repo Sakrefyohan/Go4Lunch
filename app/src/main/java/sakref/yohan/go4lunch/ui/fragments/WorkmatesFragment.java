@@ -36,18 +36,9 @@ public class WorkmatesFragment extends Fragment {
         binding = FragmentWorkmatesBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         workmatesViewModel= new ViewModelProvider(getActivity()).get(WorkmatesViewModel.class);
-
-        Log.d(TAG, "fetchWorkmates : onCreateView: init mainViewModel : " + workmatesViewModel);
-
-
         workmatesViewModel.fetchWorkmates();
 
-
-
-
         workmatesViewModel.getWorkmates().observe(getViewLifecycleOwner(), (workmates) -> {
-
-            Log.d(TAG, "fetchWorkmates : onCreateView: Workmates Ready");
 
             WorkmatesFragmentAdapters adapters = new WorkmatesFragmentAdapters(workmates);
             binding.fragmentWorkmatesRecycler.setAdapter(adapters);

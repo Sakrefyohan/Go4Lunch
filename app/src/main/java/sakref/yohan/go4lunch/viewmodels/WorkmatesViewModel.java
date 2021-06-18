@@ -39,18 +39,12 @@ public class WorkmatesViewModel extends ViewModel {
         @Override
         public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
             List<Workmates> listWorkmates = new ArrayList<Workmates>();
-            Log.d(TAG, "fetchWorkmates: OnComplete :  List<Workmates> listWorkmates = new ArrayList<Workmates>();");
-
-            Log.d(TAG, "fetchWorkmates: OnComplete : mWorkmate : " + mWorkmates);
-            Log.d(TAG, "fetchWorkmates: OnComplete : task.getResult : " + task.getResult());
 
             for (QueryDocumentSnapshot document:task.getResult())
             {
               listWorkmates.add(document.toObject(Workmates.class));
-                Log.d(TAG, "fetchWorkmates : onComplete: document : " + document);
             }
             mWorkmates.setValue(listWorkmates);
-            Log.d(TAG, "fetchWorkmates : onComplete: " + listWorkmates.size());
         }
     });
 

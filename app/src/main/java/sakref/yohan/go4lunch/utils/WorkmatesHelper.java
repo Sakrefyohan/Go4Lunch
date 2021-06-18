@@ -45,11 +45,7 @@ public class WorkmatesHelper {
     }
 
     public static Task<QuerySnapshot> getAllWorkmate(){
-        Log.d(TAG, "fetchWorkmates : --------------------");
-        Log.d(TAG, "fetchWorkmates : getAllWorkmate: AllWorkmate getted.");
-        Log.d(TAG, "fetchWorkmates : getAllWorkmate: " + WorkmatesHelper.getWorkmatesCollection().get());
-        Log.d(TAG, "fetchWorkmates : ---------------");
-        return WorkmatesHelper.getWorkmatesCollection().get();
+         return WorkmatesHelper.getWorkmatesCollection().get();
     }
 
     // --- UPDATE ---
