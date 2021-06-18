@@ -39,19 +39,12 @@ public class ListViewFragment extends Fragment {
 
     private MainViewModel mainViewModel;
 
-    GoogleMap map;
     private static final String TAG = "ListViewFragment";
-    FusedLocationProviderClient fusedLocationProviderClient;
-    FragmentViewBinding binding;
-    public String pName;
-    public int pSize;
-
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-       binding = FragmentViewBinding.inflate(getLayoutInflater());
+        FragmentViewBinding binding = FragmentViewBinding.inflate(getLayoutInflater());
        View view = binding.getRoot();
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         Log.d(TAG, "onCreateView: init mainViewModel : " + mainViewModel);
@@ -60,7 +53,6 @@ public class ListViewFragment extends Fragment {
         Log.d(TAG, "onCreateView: Places Ready");
 
            ListViewFragmentAdapters adapters = new ListViewFragmentAdapters(places.getResults());
-
            binding.fragmentViewRecycler.setAdapter(adapters);
            binding.fragmentViewRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 

@@ -1,6 +1,7 @@
 package sakref.yohan.go4lunch.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,26 +13,48 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.databinding.FragmentViewBinding;
+import sakref.yohan.go4lunch.databinding.FragmentWorkmatesBinding;
+import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.ui.adapters.WorkmatesFragmentAdapters;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
+import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
 public class WorkmatesFragment extends Fragment {
 
-    private WorkmatesViewModel mWorkmatesViewModel;
+    private static final String TAG = "WorkmatesFragment";
+    private FragmentWorkmatesBinding binding;
+    public WorkmatesViewModel workmatesViewModel;
 
+    //todo: once adapter finished, paste it here
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mWorkmatesViewModel =
-                new ViewModelProvider(this).get(WorkmatesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_workmates, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        mWorkmatesViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
+        binding = FragmentWorkmatesBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        workmatesViewModel= new ViewModelProvider(getActivity()).get(WorkmatesViewModel.class);
+
+        Log.d(TAG, "fetchWorkmates : onCreateView: init mainViewModel : " + workmatesViewModel);
+
+
+        workmatesViewModel.fetchWorkmates();
+
+
+
+
+        workmatesViewModel.getWorkmates().observe(getViewLifecycleOwner(), (workmates) -> {
+
+            Log.d(TAG, "fetchWorkmates : onCreateView: Workmates Ready");
+
+            WorkmatesFragmentAdapters adapters = new WorkmatesFragmentAdapters(workmates);
+            binding.fragmentWorkmatesRecycler.setAdapter(adapters);
+            binding.fragmentWorkmatesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+
         });
-        return root;
+
+        return view;
     }
 }

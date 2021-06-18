@@ -1,6 +1,7 @@
 package sakref.yohan.go4lunch.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.google.android.gms.common.api.ApiException;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -30,12 +32,21 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
 
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivityConnectionBinding;
+import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
+
+import static sakref.yohan.go4lunch.utils.WorkmatesHelper.createUser;
+import static sakref.yohan.go4lunch.utils.WorkmatesHelper.getWorkmate;
 
 public class ConnectionActivity extends AppCompatActivity {
 
@@ -43,7 +54,9 @@ public class ConnectionActivity extends AppCompatActivity {
     private final String TAG = "connection";
     private ActivityConnectionBinding binding;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
     private String userConnected;
+    private WorkmatesHelper workmatesHelper;
     private CallbackManager mCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -64,15 +77,18 @@ public class ConnectionActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = mAuth.getCurrentUser();
 
-       // Log.d(TAG, "onStart: " + user.getEmail() + "/" + user.getDisplayName());
         if (user != null ){
+
+            //Check if workmate is on database, if not add it.
+            fetchWorkmate();
+
             userConnected = user.getEmail();
             Log.d(TAG, "onStart: Connected with " + userConnected);
             Toast.makeText(this, "Connected with : " + userConnected, Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, MainActivity.class));
+
         } else {
             Log.d(TAG, "onStart: No user Connected");
         }
@@ -107,10 +123,7 @@ public class ConnectionActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        if (signInAccount != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            return;
-        }
+        fetchWorkmate();
         Intent sign = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(sign, RC_SIGN_IN);
 
@@ -118,6 +131,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public void signInFacebook() {
         //Initialize Facebook Login button
+        fetchWorkmate();
         LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
 
 
@@ -141,6 +155,7 @@ public class ConnectionActivity extends AppCompatActivity {
                                 Log.d(TAG, "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 if (user.isEmailVerified()) {
+                                    fetchWorkmate();
                                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 } else {
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -272,8 +287,9 @@ public class ConnectionActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            user = mAuth.getCurrentUser();
                             user.sendEmailVerification();
+                            fetchWorkmate();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             Toast.makeText(getApplicationContext(),
                                     "Create a new account",
@@ -290,5 +306,46 @@ public class ConnectionActivity extends AppCompatActivity {
                 });
     }
 
+    public void fetchWorkmate(){
+
+        Task<DocumentSnapshot> getWorkmateUID;
+        getWorkmateUID = WorkmatesHelper.getWorkmate(user.getUid());
+        getWorkmateUID.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Workmates currentWorkmate = documentSnapshot.toObject(Workmates.class);
+                Log.d(TAG, "fetchWorkmate : onSuccess : inside the fetch :  " + currentWorkmate);
+                Uri userPhotoUrl = user.getPhotoUrl();
+                if(userPhotoUrl == null){
+                    createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar));
+                }else{
+                    createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString());
+                }
+            }
+        });
+
+        getWorkmateUID.addOnFailureListener(this.onFailureListener());
+
+
+    }
+
+    // --------------------
+    // ERROR HANDLER
+    // --------------------
+
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "fetchWorkmate : onFailure: " + e);
+                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
+    }
+
+
 }
+
+
+
 

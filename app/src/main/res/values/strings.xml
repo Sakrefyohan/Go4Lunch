@@ -151,6 +151,8 @@
     <string name="createUserWithEmailFailur">The email address is already in use by another account.</string>
     <string name="signInWithEmailFailure">The password is invalid or the user does not have a password.</string>
     <string name="signInWithEmailFailureVerify">Please, verify your mail before continuing</string>
+    <string name="error_unknown_error">error unknown</string>
+    <string name="missing_Avatar">https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/425px-Missing_avatar.svg.png</string>
 
 
 </resources>

@@ -31,7 +31,6 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
 
 
     private List<Result> restaurants;
-    private List<Photo> photos;
 
     public ListViewFragmentAdapters(List<Result> restaurants) {
         this.restaurants = restaurants;
