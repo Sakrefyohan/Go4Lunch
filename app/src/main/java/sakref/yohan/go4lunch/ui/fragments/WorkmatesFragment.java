@@ -30,7 +30,7 @@ public class WorkmatesFragment extends Fragment {
     private FragmentWorkmatesBinding binding;
     public WorkmatesViewModel workmatesViewModel;
 
-    //todo: once adapter finished, paste it here
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(getLayoutInflater());

@@ -21,15 +21,13 @@ import sakref.yohan.go4lunch.ui.viewholder.WorkmateFragmentViewHolder;
 public class WorkmatesFragmentAdapters extends RecyclerView.Adapter<WorkmateFragmentViewHolder>{
 
 
-    //todo ; finish the adapter
+    /
     private List<Workmates> workmates;
 
 
     public WorkmatesFragmentAdapters(List<Workmates> workmates) {
         this.workmates = workmates;
     }
-
-
 
     @NonNull
     @NotNull
