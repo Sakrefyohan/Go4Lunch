@@ -21,12 +21,13 @@ import sakref.yohan.go4lunch.ui.viewholder.WorkmateFragmentViewHolder;
 public class WorkmatesFragmentAdapters extends RecyclerView.Adapter<WorkmateFragmentViewHolder>{
 
 
-    /
     private List<Workmates> workmates;
+    private boolean onRestaurantDetails;
 
 
-    public WorkmatesFragmentAdapters(List<Workmates> workmates) {
+    public WorkmatesFragmentAdapters(List<Workmates> workmates, boolean onRestaurantDetails ) {
         this.workmates = workmates;
+        this.onRestaurantDetails = onRestaurantDetails;
     }
 
     @NonNull
@@ -40,7 +41,8 @@ public class WorkmatesFragmentAdapters extends RecyclerView.Adapter<WorkmateFrag
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull WorkmateFragmentViewHolder holder, int position) {
-        holder.bind(workmates.get(position));
+
+        holder.bind(workmates.get(position), onRestaurantDetails);
     }
 
     @Override

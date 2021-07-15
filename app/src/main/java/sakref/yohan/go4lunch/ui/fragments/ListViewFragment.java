@@ -1,5 +1,6 @@
 package sakref.yohan.go4lunch.ui.fragments;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import sakref.yohan.go4lunch.models.OpeningHours;
 import sakref.yohan.go4lunch.models.Photo;
 import sakref.yohan.go4lunch.models.Places;
 import sakref.yohan.go4lunch.models.Viewport;
+import sakref.yohan.go4lunch.ui.MainActivity;
 import sakref.yohan.go4lunch.ui.adapters.ListViewFragmentAdapters;
 import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 

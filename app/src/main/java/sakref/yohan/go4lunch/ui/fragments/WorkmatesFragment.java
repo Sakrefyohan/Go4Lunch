@@ -40,7 +40,7 @@ public class WorkmatesFragment extends Fragment {
 
         workmatesViewModel.getWorkmates().observe(getViewLifecycleOwner(), (workmates) -> {
 
-            WorkmatesFragmentAdapters adapters = new WorkmatesFragmentAdapters(workmates);
+            WorkmatesFragmentAdapters adapters = new WorkmatesFragmentAdapters(workmates, false);
             binding.fragmentWorkmatesRecycler.setAdapter(adapters);
             binding.fragmentWorkmatesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 

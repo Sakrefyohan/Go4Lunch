@@ -25,7 +25,7 @@ import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 public class WorkmatesViewModel extends ViewModel {
 
 
-    private MutableLiveData<List<Workmates>> mWorkmates;
+    private MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
     private static String TAG = "WorkmatesViewModel";
 
     public void fetchWorkmates(){
@@ -33,7 +33,6 @@ public class WorkmatesViewModel extends ViewModel {
 
         Task<QuerySnapshot> workmateGetted = WorkmatesHelper.getAllWorkmate();
         Log.d(TAG, "fetchWorkmates: Inside the fetchWorkmates : getAllWorkmate : " + workmateGetted);
-        mWorkmates = new MutableLiveData<>();
 
     WorkmatesHelper.getAllWorkmate().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
         @Override

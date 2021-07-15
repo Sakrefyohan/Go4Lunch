@@ -76,7 +76,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-
+        super.onStart();
         user = mAuth.getCurrentUser();
 
         if (user != null ){
@@ -92,7 +92,7 @@ public class ConnectionActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "onStart: No user Connected");
         }
-        super.onStart();
+
     }
 
     @Override
@@ -123,7 +123,6 @@ public class ConnectionActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
-        fetchWorkmate();
         Intent sign = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(sign, RC_SIGN_IN);
 
@@ -245,6 +244,8 @@ public class ConnectionActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
+                                user = mAuth.getCurrentUser();
+                                fetchWorkmate();
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 Toast.makeText(getApplicationContext(),
                                         "Connected by your Google account",
@@ -265,11 +266,6 @@ public class ConnectionActivity extends AppCompatActivity {
         // FACEBOOK
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
-
-    public void toaster() {
-        Toast.makeText(getApplicationContext(), "Clicked 2", Toast.LENGTH_SHORT).show();
-    }
-
 
 
     public void signup(){
@@ -316,10 +312,11 @@ public class ConnectionActivity extends AppCompatActivity {
                 Workmates currentWorkmate = documentSnapshot.toObject(Workmates.class);
                 Log.d(TAG, "fetchWorkmate : onSuccess : inside the fetch :  " + currentWorkmate);
                 Uri userPhotoUrl = user.getPhotoUrl();
+
                 if(userPhotoUrl == null){
-                    createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar));
+                    createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar), "null");
                 }else{
-                    createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString());
+                    createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString(), "null");
                 }
             }
         });

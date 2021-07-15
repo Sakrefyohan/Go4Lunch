@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.RestaurantDetailsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/restaurant_detail_img"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/colorIconChecked"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/restaurant_detail_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="RESTAURANT NAME"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/drawer_text_color"
+                    android:textSize="30sp"/>
+
+                <!--<ImageView
+                    android:id="@+id/like_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                -->
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/restaurant_detail_vicinity"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:layout_marginStart="10dp"
+                android:text="French + restaurant"
+                android:textSize="20sp"
+                android:textColor="@color/drawer_text_color"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5">
+
+
+                <ImageButton
+                    android:id="@+id/restaurant_detail_btn_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_baseline_phone_24"
+                    android:background="@color/drawer_text_color"
+                    />
+
+                <ImageButton
+                    android:id="@+id/restaurant_detail_btn_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_baseline_star_24"
+                    android:background="@color/drawer_text_color"/>
+
+                <ImageButton
+                    android:id="@+id/restaurant_detail_btn_website"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_baseline_public_30"
+                    android:background="@color/drawer_text_color"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="CALL"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#FF5D31"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="LIKE"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#FF5D31"
+                    android:gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="WEBSITE"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#FF5D31"
+                    android:gravity="center_horizontal"
+                    />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/restaurant_detail_workmates"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/fragment_workmates_item" />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/restaurant_detail_btn_choose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:srcCompat="@drawable/ic_baseline_check_circle_24"
+        app:fabCustomSize="70dp"
+        app:maxImageSize="45dp"
+        android:backgroundTint="@color/drawer_text_color"
+        android:clickable="true"
+        app:layout_anchor="@id/restaurant_detail_img"
+        app:layout_anchorGravity="bottom|right|end"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

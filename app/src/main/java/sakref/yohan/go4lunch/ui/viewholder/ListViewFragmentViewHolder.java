@@ -13,6 +13,7 @@ import java.util.Random;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
+import sakref.yohan.go4lunch.models.OpeningHours;
 import sakref.yohan.go4lunch.models.Photo;
 import sakref.yohan.go4lunch.models.Result;
 import sakref.yohan.go4lunch.ui.adapters.ListViewFragmentAdapters;
@@ -49,16 +50,27 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder{
         mName.setText(result.getName());
         mAdress.setText(result.getVicinity());
 
-        /*Boolean nIsOpen = result.getOpeningHours().getOpenNow();
-        if (nIsOpen){
-            mIsOpen.setText("Open 24/7");
+        OpeningHours nIsOpen = result.getOpeningHours();
+        if (nIsOpen != null){
+            if (result.getOpeningHours().getOpenNow()== true){
+                mIsOpen.setText("Ouvert");
+            }else {
+                mIsOpen.setText("Fermé");
+            }
         }else{
-            mIsOpen.setText("Closed Now");
-        }*/
+            mIsOpen.setText("Aucune information disponible");
+        }
+
+
         if (result.getRating() != null) {
-            mRating.setText(String.valueOf(result.getRating().toString()));
+            if(result.getRating() == 5 && result.getRating() > 4.4){mRating.setText(result.getRating().toString() + " 🌟🌟🌟");}
+            else if(result.getRating() <= 4.3 && result.getRating() > 4.1){mRating.setText(result.getRating().toString() + " ⭐⭐⭐");}
+            else if(result.getRating() <= 4 && result.getRating() > 3.1){mRating.setText(result.getRating().toString() + " ⭐⭐");}
+            else if(result.getRating() <= 3 && result.getRating() > 2.1){mRating.setText(result.getRating().toString() + " ⭐");}
+            else if(result.getRating() <= 2){mRating.setText("☀");}
+
         }else{
-            mRating.setText("");
+            mRating.setText("Pas de note");
         }
 
         if(result.getPhotos() != null) {
