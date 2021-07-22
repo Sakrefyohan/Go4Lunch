@@ -76,8 +76,6 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder{
         if(result.getPhotos() != null) {
             int mRefSize = result.getPhotos().size();
             String mRef = result.getPhotos().get(mRefSize-1).getPhotoReference();
-            Log.d(TAG, "bind: mRefSize : " + mRefSize);
-            Log.d(TAG, "bind: mPhoto : https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s");
             API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
             //
         }else{

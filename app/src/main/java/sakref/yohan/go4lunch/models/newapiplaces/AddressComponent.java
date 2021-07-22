@@ -1,16 +1,46 @@
+
 package sakref.yohan.go4lunch.models.newapiplaces;
 
+import java.util.List;
+import javax.annotation.Generated;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+@Generated("jsonschema2pojo")
 public class AddressComponent {
+
+    @SerializedName("long_name")
+    @Expose
     private String longName;
+    @SerializedName("short_name")
+    @Expose
     private String shortName;
-    private String[] types;
+    @SerializedName("types")
+    @Expose
+    private List<String> types = null;
 
-    public String getLongName() { return longName; }
-    public void setLongName(String value) { this.longName = value; }
+    public String getLongName() {
+        return longName;
+    }
 
-    public String getShortName() { return shortName; }
-    public void setShortName(String value) { this.shortName = value; }
+    public void setLongName(String longName) {
+        this.longName = longName;
+    }
 
-    public String[] getTypes() { return types; }
-    public void setTypes(String[] value) { this.types = value; }
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public List<String> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<String> types) {
+        this.types = types;
+    }
+
 }

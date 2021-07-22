@@ -46,7 +46,6 @@ import sakref.yohan.go4lunch.models.Workmates;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 
 import static sakref.yohan.go4lunch.utils.WorkmatesHelper.createUser;
-import static sakref.yohan.go4lunch.utils.WorkmatesHelper.getWorkmate;
 
 public class ConnectionActivity extends AppCompatActivity {
 

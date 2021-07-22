@@ -6,13 +6,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,39 +79,71 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     public void bindData(PlacesDetails placesDetails){
+        Result restaurant = placesDetails.getResult();
+        Log.d(TAG, "bindData: getResult = " + restaurant.getName() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getUrl() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getAdrAddress() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getBusinessStatus() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getFormattedAddress() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getFormattedPhoneNumber() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getIcon() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getInternationalPhoneNumber() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getPlaceId() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getVicinity() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getAdrAddress());
+        Log.d(TAG, "bindData: getResult = " + restaurant.getGeometry() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getPhotos());
+        Log.d(TAG, "bindData: getResult = " + restaurant.getPlusCode() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getTypes() );
+        Log.d(TAG, "bindData: getResult = " + restaurant.getUtcOffset() );
+
 
         //API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
-        binding.restaurantDetailName.setText(placesDetails.getResult().getName()); //intent.getStringExtra("KEY_DETAIL")
+        binding.restaurantDetailName.setText(restaurant.getName()); //intent.getStringExtra("KEY_DETAIL")
         // Todo: take number of the restaurant to call it
         binding.restaurantDetailBtnCall.setOnClickListener(v -> {
-            Log.d(TAG, "bindData: Phone number = " + placesDetails.getResult().getInternationalPhoneNumber());
-            Toast.makeText(this, "Dring Dring : " + placesDetails.getResult().getInternationalPhoneNumber(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "bindData: Phone number = " + restaurant.getInternationalPhoneNumber());
+            Toast.makeText(this, "Dring Dring : " + restaurant.getInternationalPhoneNumber(), Toast.LENGTH_SHORT).show();
 
         });
         //TODO: intent Filter for action call
         binding.restaurantDetailBtnChoose.setOnClickListener(v -> {
             Toast.makeText(this, "Choisi", Toast.LENGTH_SHORT).show();
 
-            WorkmatesHelper.updateRestaurantJoined(placesDetails.getResult().getPlaceId(), mUid);
+            WorkmatesHelper.updateRestaurantJoined(restaurant.getPlaceId(), mUid);
             //TODO: Change the effect for the ADD
 
         });
         binding.restaurantDetailBtnLike.setOnClickListener(v -> {
             Toast.makeText(this, "Liké", Toast.LENGTH_SHORT).show();
+            //WorkmatesHelper.addFavRestaurant(restaurant.getPlaceId(), mUid, restaurant.getName());
+            //WorkmatesHelper.deleteFavRestaurant(restaurant.getPlaceId(), mUid);
             //TODO: update document Collection
-            WorkmatesHelper.addFavRestaurant(placesDetails.getResult().getPlaceId(), mUid);
-        });
+            //TODO : Can't get the restaurant to check if exist so i delete nor add it to db
+            WorkmatesHelper.getFavRestaurant(mUid, restaurant.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                            Log.d(TAG, "onComplete: yes");
+                        }
+                    }
+                }
+            });
+
+            });
+
         binding.restaurantDetailBtnWebsite.setOnClickListener(v -> {
             Toast.makeText(this, "Website", Toast.LENGTH_SHORT).show();
-            //TODO: Add the intent Filter : placesDetails.getResult().getUrl();
+            //TODO: Add the intent Filter : restaurant.getUrl();
         });
         binding.restaurantDetailVicinity.setText(placesDetails.getResult().getVicinity());
 
-        Photo photo = placesDetails.getResult().getPhotos()[0];
+        List<Photo> photo = placesDetails.getResult().getPhotos();
 
         if(photo != null) {
-            //int mRefSize = photo.get;
-            String mRef = photo.getPhotoReference();
+            int mRefSize = photo.size();
+            String mRef = photo.get(mRefSize-1).getPhotoReference();
 
             APIs = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
             //

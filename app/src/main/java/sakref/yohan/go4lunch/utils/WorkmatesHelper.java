@@ -1,16 +1,10 @@
 package sakref.yohan.go4lunch.utils;
 
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
@@ -25,12 +19,12 @@ public class WorkmatesHelper {
 
 
     private static final String COLLECTION_NAME = "workmates";
-    private static final String SUB_COLLECTION_NAME = "FavRestaurant";
+    private static final String SUB_COLLECTION_NAME = "favrestaurant";
     private static String TAG = "WorkmatesHelper";
     public static WorkmatesViewModel workmatesViewModel;
     // --- COLLECTION REFERENCE ---
 
-    public static CollectionReference getWorkmatesCollection(){
+    public static CollectionReference getWorkmatesCollection() {
 
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
@@ -39,11 +33,15 @@ public class WorkmatesHelper {
 
     public static Task<Void> createUser(String uid, String username, String urlPicture, String restaurantJoined) {
         Workmates workmateToCreate = new Workmates(uid, username, urlPicture, restaurantJoined);
-
         return WorkmatesHelper.getWorkmatesCollection().document(uid).set(workmateToCreate);
     }
 
-
+    public static Task<Void> addFavRestaurant(String restaurantUid, String uid, String restaurantName) {
+        Map<String, Object> restaurantFav = new HashMap<>();
+        restaurantFav.put("restaurant", restaurantName);
+        restaurantFav.put("restaurantUid", restaurantUid);
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantUid).set(restaurantFav);
+    }
 
     // --- GET ---
 
@@ -55,6 +53,20 @@ public class WorkmatesHelper {
          return WorkmatesHelper.getWorkmatesCollection().get();
     }
 
+    public static Task<DocumentSnapshot> getFavRestaurants(String userUid, String restaurantUid){
+        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).document().get();
+    }
+
+    public static Task<QuerySnapshot> getFavRestaurant(String userUid, String restaurantUid){
+
+        WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid",restaurantUid).get();
+
+        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid",restaurantUid).get();
+    }
+
+
+
+
     // --- UPDATE ---
 
     public static Task<Void> updateWorkmateName(String username, String uid) {
@@ -63,15 +75,8 @@ public class WorkmatesHelper {
 
     public static Task<Void> updateRestaurantJoined(String restaurantJoined, String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurantJoined);
+
     }
-
-    public static Task<Void> addFavRestaurant(String restaurantName, String uid) {
-        Map<String, Object> restaurantFav = new HashMap<>();
-        restaurantFav.put("restaurant", restaurantName);
-        return WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantName).set(restaurantFav);
-    }
-
-
 
     // --- DELETE ---
 
@@ -79,9 +84,8 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).delete();
     }
 
-    public static Task<Void> deleteFavRestaurant(String restaurantName, String uid) {
-        return WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantName).delete();
+    public static void deleteFavRestaurant(String restaurantUid, String uid) {
+        WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantUid).delete();
     }
-
 
 }

@@ -1,16 +1,46 @@
+
 package sakref.yohan.go4lunch.models.newapiplaces;
 
+import java.util.List;
+import javax.annotation.Generated;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+@Generated("jsonschema2pojo")
 public class PlacesDetails {
-    private Object[] htmlAttributions;
+
+    @SerializedName("html_attributions")
+    @Expose
+    private List<Object> htmlAttributions = null;
+    @SerializedName("result")
+    @Expose
     private Result result;
+    @SerializedName("status")
+    @Expose
     private String status;
 
-    public Object[] getHtmlAttributions() { return htmlAttributions; }
-    public void setHtmlAttributions(Object[] value) { this.htmlAttributions = value; }
+    public List<Object> getHtmlAttributions() {
+        return htmlAttributions;
+    }
 
-    public Result getResult() { return result; }
-    public void setResult(Result value) { this.result = value; }
+    public void setHtmlAttributions(List<Object> htmlAttributions) {
+        this.htmlAttributions = htmlAttributions;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String value) { this.status = value; }
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

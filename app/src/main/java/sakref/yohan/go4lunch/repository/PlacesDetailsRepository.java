@@ -30,10 +30,10 @@ public class PlacesDetailsRepository {
         detailsPlacesApi = RetrofitService.createService(DetailsPlacesApi.class);
     }
 
-    public MutableLiveData<PlacesDetails> getDetailsRestaurants(String placeID, String key) {
+    public MutableLiveData<PlacesDetails> getDetailsRestaurants(String placeID, String key, String fields) {
         MutableLiveData<PlacesDetails> detailsRestaurantData = new MutableLiveData<>();
         Log.d(TAG, "getDetailsRestaurants: fetch PlaceID + KEY " + placeID + " / " + key);
-        detailsPlacesApi.getRestaurantDetails(placeID, key)
+        detailsPlacesApi.getRestaurantDetails(placeID, fields, key)
                 .enqueue(new Callback<PlacesDetails>() {
 
                     @Override

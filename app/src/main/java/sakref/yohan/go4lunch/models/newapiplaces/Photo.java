@@ -1,23 +1,57 @@
+
 package sakref.yohan.go4lunch.models.newapiplaces;
 
+import java.util.List;
+import javax.annotation.Generated;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Generated("jsonschema2pojo")
 public class Photo {
-    private Long height;
-    private String[] htmlAttributions;
+
+    @SerializedName("height")
+    @Expose
+    private Integer height;
+    @SerializedName("html_attributions")
+    @Expose
+    private List<String> htmlAttributions = null;
     @SerializedName("photo_reference")
+    @Expose
     private String photoReference;
-    private Long width;
+    @SerializedName("width")
+    @Expose
+    private Integer width;
 
-    public Long getHeight() { return height; }
-    public void setHeight(Long value) { this.height = value; }
+    public Integer getHeight() {
+        return height;
+    }
 
-    public String[] getHtmlAttributions() { return htmlAttributions; }
-    public void setHtmlAttributions(String[] value) { this.htmlAttributions = value; }
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
 
-    public String getPhotoReference() { return photoReference; }
-    public void setPhotoReference(String value) { this.photoReference = value; }
+    public List<String> getHtmlAttributions() {
+        return htmlAttributions;
+    }
 
-    public Long getWidth() { return width; }
-    public void setWidth(Long value) { this.width = value; }
+    public void setHtmlAttributions(List<String> htmlAttributions) {
+        this.htmlAttributions = htmlAttributions;
+    }
+
+    public String getPhotoReference() {
+        return photoReference;
+    }
+
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
 }

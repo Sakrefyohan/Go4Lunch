@@ -1,12 +1,34 @@
+
 package sakref.yohan.go4lunch.models.newapiplaces;
 
+import javax.annotation.Generated;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+@Generated("jsonschema2pojo")
 public class Geometry {
+
+    @SerializedName("location")
+    @Expose
     private Location location;
+    @SerializedName("viewport")
+    @Expose
     private Viewport viewport;
 
-    public Location getLocation() { return location; }
-    public void setLocation(Location value) { this.location = value; }
+    public Location getLocation() {
+        return location;
+    }
 
-    public Viewport getViewport() { return viewport; }
-    public void setViewport(Viewport value) { this.viewport = value; }
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Viewport getViewport() {
+        return viewport;
+    }
+
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
+    }
+
 }
