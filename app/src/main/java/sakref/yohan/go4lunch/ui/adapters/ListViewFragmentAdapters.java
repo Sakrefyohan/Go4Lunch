@@ -46,10 +46,7 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), RestaurantDetailsActivity.class);
-
-                //https://stackoverflow.com/questions/2139134/how-to-send-an-object-from-one-android-activity-to-another-using-intents
                 intent.putExtra("KEY_DETAIL", restaurants.get(position).getPlaceId());
-
                 v.getContext().startActivity(intent);
                 Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_SHORT).show();
 

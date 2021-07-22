@@ -3,7 +3,6 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "sakref.yohan.go4lunch"
@@ -99,6 +98,9 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-firestore'
 
-
+    //JacksonBind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0-rc1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0-rc1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0-rc1'
 
 }

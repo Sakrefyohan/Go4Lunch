@@ -2,25 +2,41 @@ package sakref.yohan.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Arrays;
 import java.util.List;
 
+import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivityRestaurantDetailBinding;
 import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.models.newapiplaces.Photo;
+import sakref.yohan.go4lunch.models.newapiplaces.PlacesDetails;
+import sakref.yohan.go4lunch.models.newapiplaces.Result;
 import sakref.yohan.go4lunch.ui.adapters.WorkmatesFragmentAdapters;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
+import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
 public class RestaurantDetailsActivity extends AppCompatActivity {
 
+    private static String TAG = "RestaurantDetailsActivity";
     private ActivityRestaurantDetailBinding binding;
     public WorkmatesViewModel workmatesViewModel;
+    public MainViewModel mainViewModel;
     private WorkmatesFragmentAdapters WorkmatesFragmentAdapters;
+    private FirebaseAuth mAuth;
+    private String mUid;
     Intent intent;
     String APIs;
 
@@ -31,7 +47,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         this.configureViewModel();
-        bindData();
+        mAuth = FirebaseAuth.getInstance();
+        mUid = mAuth.getCurrentUser().getUid();
+        fetchDetailsRestaurant();
 
     }
 
@@ -39,6 +57,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         workmatesViewModel = new ViewModelProvider(this).get(WorkmatesViewModel.class);
         workmatesViewModel.fetchWorkmates();
         workmatesViewModel.getWorkmates().observe(this, this::configureRecyclerView);
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
     }
 
@@ -50,60 +69,60 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     }
 
-    public void bindData(){
-
-        //TODO:API PLACES
-        fetchDetailsRestaurant();
-
+    public void bindData(PlacesDetails placesDetails){
 
         //API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
-        binding.restaurantDetailName.setText("RESTO"); //intent.getStringExtra("KEY_DETAIL")
+        binding.restaurantDetailName.setText(placesDetails.getResult().getName()); //intent.getStringExtra("KEY_DETAIL")
         // Todo: take number of the restaurant to call it
         binding.restaurantDetailBtnCall.setOnClickListener(v -> {
-            Toast.makeText(this, "Dring Dring", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "bindData: Phone number = " + placesDetails.getResult().getInternationalPhoneNumber());
+            Toast.makeText(this, "Dring Dring : " + placesDetails.getResult().getInternationalPhoneNumber(), Toast.LENGTH_SHORT).show();
 
         });
         //TODO: intent Filter for action call
         binding.restaurantDetailBtnChoose.setOnClickListener(v -> {
             Toast.makeText(this, "Choisi", Toast.LENGTH_SHORT).show();
+
+            WorkmatesHelper.updateRestaurantJoined(placesDetails.getResult().getPlaceId(), mUid);
+            //TODO: Change the effect for the ADD
+
         });
         binding.restaurantDetailBtnLike.setOnClickListener(v -> {
             Toast.makeText(this, "Liké", Toast.LENGTH_SHORT).show();
+            //TODO: update document Collection
+            WorkmatesHelper.addFavRestaurant(placesDetails.getResult().getPlaceId(), mUid);
         });
         binding.restaurantDetailBtnWebsite.setOnClickListener(v -> {
             Toast.makeText(this, "Website", Toast.LENGTH_SHORT).show();
+            //TODO: Add the intent Filter : placesDetails.getResult().getUrl();
         });
-        binding.restaurantDetailVicinity.setText("français");
+        binding.restaurantDetailVicinity.setText(placesDetails.getResult().getVicinity());
 
-        /*
-        if(resultId.getPhotos() != null) {
-            int mRefSize = resultId.getPhotos().size();
-            String mRef = resultId.getPhotos().get(mRefSize-1).getPhotoReference();
+        Photo photo = placesDetails.getResult().getPhotos()[0];
+
+        if(photo != null) {
+            //int mRefSize = photo.get;
+            String mRef = photo.getPhotoReference();
+
             APIs = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
             //
+            Glide
+                    .with(binding.restaurantDetailImg.getContext())
+                    .load(APIs)
+                    .centerCrop()
+                    .error(R.drawable.ic_no_image)
+                    .into(binding.restaurantDetailImg);
         }else{
             binding.restaurantDetailImg.setImageResource(R.drawable.ic_no_image);
         }
-
-        Glide
-                .with(binding.restaurantDetailImg.getContext())
-                .load(APIs)
-                .centerCrop()
-                .error(R.drawable.ic_no_image)
-                .into(binding.restaurantDetailImg);
-
-*/
     }
 
     public void fetchDetailsRestaurant(){
         intent = getIntent();
         String resultId = intent.getStringExtra("KEY_DETAIL");
-
-        //AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s
-        //API Places : https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,permanently_closed,photo,place_id,plus_code,type,url,utc_offset,vicinity&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s
+        Log.d(TAG, "fetchDetailsRestaurant: " + resultId);
+        mainViewModel.FetchDetailsRestaurant(resultId);
+        mainViewModel.getPlacesDetails().observe(this, this::bindData);
     }
-
-
-
 
 }
