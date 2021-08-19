@@ -8,27 +8,12 @@ import com.google.gson.annotations.SerializedName;
 @Generated("jsonschema2pojo")
 public class Result {
 
-    @SerializedName("address_components")
-    @Expose
-    private List<AddressComponent> addressComponents = null;
-    @SerializedName("adr_address")
-    @Expose
-    private String adrAddress;
-    @SerializedName("business_status")
-    @Expose
-    private String businessStatus;
     @SerializedName("formatted_address")
     @Expose
     private String formattedAddress;
-    @SerializedName("formatted_phone_number")
-    @Expose
-    private String formattedPhoneNumber;
     @SerializedName("geometry")
     @Expose
     private Geometry geometry;
-    @SerializedName("icon")
-    @Expose
-    private String icon;
     @SerializedName("international_phone_number")
     @Expose
     private String internationalPhoneNumber;
@@ -41,45 +26,9 @@ public class Result {
     @SerializedName("place_id")
     @Expose
     private String placeId;
-    @SerializedName("plus_code")
+    @SerializedName("website")
     @Expose
-    private PlusCode plusCode;
-    @SerializedName("types")
-    @Expose
-    private List<String> types = null;
-    @SerializedName("url")
-    @Expose
-    private String url;
-    @SerializedName("utc_offset")
-    @Expose
-    private Integer utcOffset;
-    @SerializedName("vicinity")
-    @Expose
-    private String vicinity;
-
-    public List<AddressComponent> getAddressComponents() {
-        return addressComponents;
-    }
-
-    public void setAddressComponents(List<AddressComponent> addressComponents) {
-        this.addressComponents = addressComponents;
-    }
-
-    public String getAdrAddress() {
-        return adrAddress;
-    }
-
-    public void setAdrAddress(String adrAddress) {
-        this.adrAddress = adrAddress;
-    }
-
-    public String getBusinessStatus() {
-        return businessStatus;
-    }
-
-    public void setBusinessStatus(String businessStatus) {
-        this.businessStatus = businessStatus;
-    }
+    private String website;
 
     public String getFormattedAddress() {
         return formattedAddress;
@@ -89,28 +38,12 @@ public class Result {
         this.formattedAddress = formattedAddress;
     }
 
-    public String getFormattedPhoneNumber() {
-        return formattedPhoneNumber;
-    }
-
-    public void setFormattedPhoneNumber(String formattedPhoneNumber) {
-        this.formattedPhoneNumber = formattedPhoneNumber;
-    }
-
     public Geometry getGeometry() {
         return geometry;
     }
 
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
     }
 
     public String getInternationalPhoneNumber() {
@@ -145,44 +78,8 @@ public class Result {
         this.placeId = placeId;
     }
 
-    public PlusCode getPlusCode() {
-        return plusCode;
-    }
+    public String getWebsite() {return website;}
 
-    public void setPlusCode(PlusCode plusCode) {
-        this.plusCode = plusCode;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Integer getUtcOffset() {
-        return utcOffset;
-    }
-
-    public void setUtcOffset(Integer utcOffset) {
-        this.utcOffset = utcOffset;
-    }
-
-    public String getVicinity() {
-        return vicinity;
-    }
-
-    public void setVicinity(String vicinity) {
-        this.vicinity = vicinity;
-    }
+    public void setWebsite(String website) {this.website = website;}
 
 }

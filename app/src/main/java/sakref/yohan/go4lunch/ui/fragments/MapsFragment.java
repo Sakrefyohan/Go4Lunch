@@ -50,6 +50,8 @@ public class MapsFragment extends Fragment {
     public int pSize;
     public double pLat;
     public double pLng;
+    public double dLat;
+    public double dLng;
     GoogleMap map;
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -107,7 +109,7 @@ public class MapsFragment extends Fragment {
     }
 
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation() {
+    public void getCurrentLocation() {
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(
                Context.LOCATION_SERVICE
@@ -122,25 +124,17 @@ public class MapsFragment extends Fragment {
                     if (location != null) {
 
                         mainViewModel.FetchRestaurant(location);
-
-
-
-                        Log.d(TAG, "onComplete: Places Get --> " + mainViewModel.getPlaces());
+                        mainViewModel.setLat2(location.getLatitude());
+                        mainViewModel.setLon2(location.getLongitude());
                         mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
 
                             pSize = places.getResults().size();
                             for (int j = 0; j < pSize; j++) {
                                 pName = places.getResults().get(j).getName();
-                                Log.d(TAG, "onComplete: name = " + pName);
                                 pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
                                 pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
                                 mPlaces = new LatLng(pLat, pLng);
                                 map.addMarker(new MarkerOptions().position(mPlaces).title(pName));
-                                //int mPhotosWidth = places.getResults().get(j).getPhotos().get(0).getWidth();
-                                //String mPhotosReference = places.getResults().get(j).getPhotos().get(0).getPhotoReference();
-                                //mainViewModel.FetchPhotos(mPhotosReference, mPhotosWidth);
-                                //mainViewModel.getPhotos();
-
 
                             }
                         });

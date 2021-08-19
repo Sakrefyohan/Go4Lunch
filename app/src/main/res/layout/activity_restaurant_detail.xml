@@ -16,7 +16,7 @@
             android:id="@+id/restaurant_detail_img"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"/>
+            android:layout_weight="2"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -55,6 +55,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:text="French + restaurant"
                 android:textSize="20sp"
                 android:textColor="@color/drawer_text_color"/>
@@ -64,7 +65,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:orientation="vertical">
 
             <LinearLayout
@@ -87,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_baseline_star_24"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
                     android:background="@color/drawer_text_color"/>
 
                 <ImageButton
@@ -162,7 +163,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:srcCompat="@drawable/ic_baseline_check_circle_24"
+        app:srcCompat="@drawable/ic_check_empty"
         app:fabCustomSize="70dp"
         app:maxImageSize="45dp"
         android:backgroundTint="@color/drawer_text_color"

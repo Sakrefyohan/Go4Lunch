@@ -48,9 +48,31 @@ public class WorkmatesViewModel extends ViewModel {
     });
 
     WorkmatesHelper.getAllWorkmate().addOnFailureListener(this.onFailureListener());
+    }
 
+    public void fetchWorkmatesJoined(String restaurantJoined){
+
+        WorkmatesHelper.getAllJoiningWorkmate(restaurantJoined).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                List<Workmates> listWorkmates = new ArrayList<Workmates>();
+
+                for (QueryDocumentSnapshot document:task.getResult())
+                {
+                    listWorkmates.add(document.toObject(Workmates.class));
+                }
+                mWorkmates.setValue(listWorkmates);
+
+            }
+        });
 
     }
+
+
+
+
+
+
     public MutableLiveData<List<Workmates>> getWorkmates() {return mWorkmates;}
 
     // --------------------

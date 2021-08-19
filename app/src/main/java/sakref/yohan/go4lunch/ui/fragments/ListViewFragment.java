@@ -54,11 +54,11 @@ public class ListViewFragment extends Fragment {
        mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
         Log.d(TAG, "onCreateView: Places Ready");
 
-           ListViewFragmentAdapters adapters = new ListViewFragmentAdapters(places.getResults());
+           ListViewFragmentAdapters adapters = new ListViewFragmentAdapters(places.getResults(), mainViewModel.getLat2(), mainViewModel.getLon2());
            binding.fragmentViewRecycler.setAdapter(adapters);
            binding.fragmentViewRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
+            //TODO: Ajout des distance des restaurant + Nb de personne
         });
 
         return view;

@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
@@ -22,6 +23,7 @@ public class WorkmatesHelper {
     private static final String SUB_COLLECTION_NAME = "favrestaurant";
     private static String TAG = "WorkmatesHelper";
     public static WorkmatesViewModel workmatesViewModel;
+    private String restaurantJoined;
     // --- COLLECTION REFERENCE ---
 
     public static CollectionReference getWorkmatesCollection() {
@@ -49,18 +51,23 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).get();
     }
 
+    public static Task<DocumentSnapshot> getWorkmateRestaurantJoined(String uid){
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).get();
+    }
+
     public static Task<QuerySnapshot> getAllWorkmate(){
          return WorkmatesHelper.getWorkmatesCollection().get();
     }
 
+    public static Task<QuerySnapshot> getAllJoiningWorkmate(String restaurantJoined){
+        return WorkmatesHelper.getWorkmatesCollection().whereEqualTo("restaurantJoined", restaurantJoined).get() ;
+    }
+
     public static Task<DocumentSnapshot> getFavRestaurants(String userUid, String restaurantUid){
-        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).document().get();
+        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).document(restaurantUid).get();
     }
 
     public static Task<QuerySnapshot> getFavRestaurant(String userUid, String restaurantUid){
-
-        WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid",restaurantUid).get();
-
         return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid",restaurantUid).get();
     }
 
@@ -73,8 +80,8 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("workmatesName", username);
     }
 
-    public static Task<Void> updateRestaurantJoined(String restaurantJoined, String uid) {
-        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurantJoined);
+    public static Task<Void> updateRestaurantJoined(String restaurant, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurant);
 
     }
 
@@ -86,6 +93,11 @@ public class WorkmatesHelper {
 
     public static void deleteFavRestaurant(String restaurantUid, String uid) {
         WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantUid).delete();
+    }
+
+    public static Task<Void> deleteRestaurantJoined(String restaurantJoined, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurantJoined);
+
     }
 
 }

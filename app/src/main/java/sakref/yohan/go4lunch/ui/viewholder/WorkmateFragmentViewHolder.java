@@ -32,13 +32,11 @@ public class WorkmateFragmentViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(Workmates result, boolean onRestaurantDetails){
-        //Todo: Do the if and change text in case.
         if (!onRestaurantDetails){
             mName.setText(result.getWorkmatesName() + " RESTAURANT");
 
         }else{mName.setText(result.getWorkmatesName() + " is joining");}
 
-        //TODO: Create collection
 
         if(result.getUrlPicture() != null) {
 

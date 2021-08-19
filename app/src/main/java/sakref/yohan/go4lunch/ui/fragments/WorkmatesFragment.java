@@ -44,6 +44,8 @@ public class WorkmatesFragment extends Fragment {
             binding.fragmentWorkmatesRecycler.setAdapter(adapters);
             binding.fragmentWorkmatesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
+            //TODO: Ajouter nom du restaurant + click sur le restaurant
+
         });
 
         return view;

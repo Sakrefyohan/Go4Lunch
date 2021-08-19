@@ -28,7 +28,7 @@
        android:layout_height="match_parent">
 
        <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/nav_drawer_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/nav_header_desc"
@@ -39,7 +39,7 @@
         />
 
     <TextView
-        android:id="@+id/textview_user_name"
+        android:id="@+id/nav_drawer_workmates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -48,12 +48,12 @@
         android:text="@string/nav_header_title"
         android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintLeft_toRightOf="@+id/imageView"
+        app:layout_constraintLeft_toRightOf="@+id/nav_drawer_avatar"
         app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/nav_drawer_mail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -61,8 +61,8 @@
         android:layout_marginStart="7dp"
         android:text="@string/nav_header_subtitle"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/textview_user_name"
-        app:layout_constraintLeft_toRightOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/nav_drawer_workmates"
+        app:layout_constraintLeft_toRightOf="@+id/nav_drawer_avatar"
         />
 
    </androidx.constraintlayout.widget.ConstraintLayout>

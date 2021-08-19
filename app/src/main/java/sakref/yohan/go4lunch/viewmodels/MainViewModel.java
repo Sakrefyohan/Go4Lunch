@@ -16,6 +16,8 @@ public class MainViewModel extends ViewModel {
     private LiveData<Places> mPlaces;
     private LiveData<PlacesDetails> mPlacesDetails;
     private static final String TAG = "MapsViewModel";
+    private double lat2;
+    private double lon2;
 
     public MainViewModel() {
         Log.d(TAG, "MapViewModel Called");
@@ -27,7 +29,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void FetchDetailsRestaurant(String placeID){
-        mPlacesDetails = PlacesDetailsRepository.getInstance().getDetailsRestaurants(placeID, "AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s", "formatted_phone_number,international_phone_number,address_component,adr_address,business_status,formatted_address,geometry,icon,name,permanently_closed,photo,place_id,plus_code,type,url,utc_offset,vicinity" );
+        mPlacesDetails = PlacesDetailsRepository.getInstance().getDetailsRestaurants(placeID, "AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s", "international_phone_number,geometry,name,photo,place_id,website" );
 
     }
 
@@ -36,6 +38,22 @@ public class MainViewModel extends ViewModel {
 
     public LiveData<PlacesDetails> getPlacesDetails() {
         return mPlacesDetails;
+    }
+
+    public double getLat2() {
+        return lat2;
+    }
+
+    public void setLat2(double lat2) {
+        this.lat2 = lat2;
+    }
+
+    public double getLon2() {
+        return lon2;
+    }
+
+    public void setLon2(double lon2) {
+        this.lon2 = lon2;
     }
 
 }

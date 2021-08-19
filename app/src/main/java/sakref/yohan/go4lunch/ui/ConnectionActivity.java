@@ -305,11 +305,38 @@ public class ConnectionActivity extends AppCompatActivity {
 
         Task<DocumentSnapshot> getWorkmateUID;
         getWorkmateUID = WorkmatesHelper.getWorkmate(user.getUid());
+        getWorkmateUID.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (!task.getResult().exists()) {
+                        Log.d(TAG, "onComplete: Workmate doesn't exist");
+                        Uri userPhotoUrl = user.getPhotoUrl();
+                        if(userPhotoUrl == null){
+                            createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar), "");
+                        }else{
+                            createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString(), "");
+                        }
+                        
+                    }else{
+                        String restaurantJoined = task.getResult().getString("restaurantJoined");
+                        Log.d(TAG, "onComplete: Workmate Already Exist");
+                    }
+
+                }
+            }
+        });
+
+
+        /*
         getWorkmateUID.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Workmates currentWorkmate = documentSnapshot.toObject(Workmates.class);
                 Log.d(TAG, "fetchWorkmate : onSuccess : inside the fetch :  " + currentWorkmate);
+
+
+
                 Uri userPhotoUrl = user.getPhotoUrl();
 
                 if(userPhotoUrl == null){
@@ -319,7 +346,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 }
             }
         });
-
+*/
         getWorkmateUID.addOnFailureListener(this.onFailureListener());
 
 

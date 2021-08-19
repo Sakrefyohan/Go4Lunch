@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
+import sakref.yohan.go4lunch.models.Location;
 import sakref.yohan.go4lunch.models.Result;
 import sakref.yohan.go4lunch.ui.RestaurantDetailsActivity;
 import sakref.yohan.go4lunch.ui.viewholder.ListViewFragmentViewHolder;
@@ -24,9 +25,13 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
 
 
     private List<Result> restaurants;
+    private double lat;
+    private double lng;
     private String restaurantsChoose;
 
-    public ListViewFragmentAdapters(List<Result> restaurants) {
+    public ListViewFragmentAdapters(List<Result> restaurants, double lat, double lng) {
+        this.lat = lat;
+        this.lng = lng;
         this.restaurants = restaurants;
     }
 
@@ -36,7 +41,7 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
     public ListViewFragmentViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         // CREATE VIEW HOLDER AND INFLATING ITS XML LAYOUT
         FragmentViewItemBinding binding = FragmentViewItemBinding.inflate(LayoutInflater.from(parent.getContext()) ,parent, false);
-        return new ListViewFragmentViewHolder(binding);
+        return new ListViewFragmentViewHolder(binding, lat, lng);
     }
 
     @Override
@@ -61,23 +66,4 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
     public int getItemCount() {
         return restaurants.size();
     }
-
-    /*
-    public void geocoder({
-        Geocoder geo = new Geocoder(getContext());
-
-        pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
-        pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
-        mPlaces = new LatLng(pLat, pLng);
-
-                try {
-            mAdress = geo.getFromLocation(pLat,pLng,1).get(0).getAddressLine(0);
-        } catch (
-        IOException e) {
-            e.printStackTrace();
-        }
-    })
-
-
-     */
 }

@@ -1,6 +1,9 @@
 package sakref.yohan.go4lunch.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +41,12 @@ import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
+import static android.Manifest.permission.CALL_PHONE;
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public class RestaurantDetailsActivity extends AppCompatActivity {
+
 
     private static String TAG = "RestaurantDetailsActivity";
     private ActivityRestaurantDetailBinding binding;
@@ -48,6 +57,11 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private String mUid;
     Intent intent;
     String APIs;
+    Result restaurant;
+    Task<DocumentSnapshot> mCurrentWorkmate;
+    String resultId;
+    String restaurantJoined;
+    String restaurantFav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +72,15 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         this.configureViewModel();
         mAuth = FirebaseAuth.getInstance();
         mUid = mAuth.getCurrentUser().getUid();
+        mCurrentWorkmate = WorkmatesHelper.getWorkmate(mUid);
         fetchDetailsRestaurant();
 
     }
 
     private void configureViewModel(){
+
         workmatesViewModel = new ViewModelProvider(this).get(WorkmatesViewModel.class);
-        workmatesViewModel.fetchWorkmates();
+        //workmatesViewModel.fetchWorkmatesJoined(restaurant.getPlaceId());
         workmatesViewModel.getWorkmates().observe(this, this::configureRecyclerView);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
@@ -79,91 +95,141 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     public void bindData(PlacesDetails placesDetails){
-        Result restaurant = placesDetails.getResult();
-        Log.d(TAG, "bindData: getResult = " + restaurant.getName() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getUrl() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getAdrAddress() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getBusinessStatus() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getFormattedAddress() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getFormattedPhoneNumber() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getIcon() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getInternationalPhoneNumber() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getPlaceId() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getVicinity() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getAdrAddress());
-        Log.d(TAG, "bindData: getResult = " + restaurant.getGeometry() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getPhotos());
-        Log.d(TAG, "bindData: getResult = " + restaurant.getPlusCode() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getTypes() );
-        Log.d(TAG, "bindData: getResult = " + restaurant.getUtcOffset() );
+        restaurant = placesDetails.getResult();
+        fetchWorkmateJoined();
+        fetchRestaurantJoined();
+        fetchRestaurantFav();
 
+                    //API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
+                    binding.restaurantDetailName.setText(restaurant.getName()); //intent.getStringExtra("KEY_DETAIL")
 
-        //API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
-        binding.restaurantDetailName.setText(restaurant.getName()); //intent.getStringExtra("KEY_DETAIL")
-        // Todo: take number of the restaurant to call it
-        binding.restaurantDetailBtnCall.setOnClickListener(v -> {
-            Log.d(TAG, "bindData: Phone number = " + restaurant.getInternationalPhoneNumber());
-            Toast.makeText(this, "Dring Dring : " + restaurant.getInternationalPhoneNumber(), Toast.LENGTH_SHORT).show();
-
-        });
-        //TODO: intent Filter for action call
-        binding.restaurantDetailBtnChoose.setOnClickListener(v -> {
-            Toast.makeText(this, "Choisi", Toast.LENGTH_SHORT).show();
-
-            WorkmatesHelper.updateRestaurantJoined(restaurant.getPlaceId(), mUid);
-            //TODO: Change the effect for the ADD
-
-        });
-        binding.restaurantDetailBtnLike.setOnClickListener(v -> {
-            Toast.makeText(this, "Liké", Toast.LENGTH_SHORT).show();
-            //WorkmatesHelper.addFavRestaurant(restaurant.getPlaceId(), mUid, restaurant.getName());
-            //WorkmatesHelper.deleteFavRestaurant(restaurant.getPlaceId(), mUid);
-            //TODO: update document Collection
-            //TODO : Can't get the restaurant to check if exist so i delete nor add it to db
-            WorkmatesHelper.getFavRestaurant(mUid, restaurant.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                            Log.d(TAG, "onComplete: yes");
+                    binding.restaurantDetailBtnCall.setOnClickListener(v -> {
+                        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                            Intent callIntent = new Intent(Intent.ACTION_CALL);
+                            callIntent.setData(Uri.parse("tel:" + restaurant.getInternationalPhoneNumber()));
+                            startActivity(callIntent);
+                        } else {
+                            ActivityCompat.requestPermissions(this, new String[]{CALL_PHONE}, 44);
                         }
+                    });
+
+                    binding.restaurantDetailBtnChoose.setOnClickListener(new View.OnClickListener() {
+                        @Override public void onClick(View v) {
+                            if (!restaurantJoined.equals(restaurant.getPlaceId())) {
+                                Log.d(TAG, "onClick: restaurantJoined is " + restaurantJoined);
+                                binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_ok);
+                                WorkmatesHelper.updateRestaurantJoined(restaurant.getPlaceId(), mUid);
+                            } else {
+                                Log.d(TAG, "onClick: restaurantJoined = EEEELSEEEE");
+                                WorkmatesHelper.updateRestaurantJoined("", mUid);
+                                binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_empty);
+
+                            }
+                            fetchWorkmateJoined();
+                            fetchRestaurantJoined();
+                        }
+                    });
+
+                    binding.restaurantDetailBtnLike.setOnClickListener(v -> {
+                        WorkmatesHelper.getFavRestaurant(mUid, restaurant.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    if (task.getResult().size() > 0) {
+                                        WorkmatesHelper.deleteFavRestaurant(restaurant.getPlaceId(), mUid);
+                                        Log.d(TAG, "onComplete: delete ok");
+
+                                    } else {
+                                        WorkmatesHelper.addFavRestaurant(restaurant.getPlaceId(), mUid, restaurant.getName());
+                                        Log.d(TAG, "onComplete: Adding ok");
+
+                                    }
+                                    fetchRestaurantFav();
+
+                                }
+                            }
+                        });
+
+                    });
+
+                    binding.restaurantDetailBtnWebsite.setOnClickListener(v -> {
+
+                       String website = placesDetails.getResult().getWebsite();
+                        if(website.isEmpty()){
+                        }else {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse(website));
+                            startActivity(intent);
+                        }
+                    });
+
+                    binding.restaurantDetailVicinity.setText(placesDetails.getResult().getFormattedAddress());
+
+                    List<Photo> photo = placesDetails.getResult().getPhotos();
+
+                    if (photo != null) {
+                        int mRefSize = photo.size();
+                        String mRef = photo.get(mRefSize - 1).getPhotoReference();
+
+                        APIs = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
+                        //
+                        Glide
+                                .with(binding.restaurantDetailImg.getContext())
+                                .load(APIs)
+                                .centerCrop()
+                                .error(R.drawable.ic_no_image)
+                                .into(binding.restaurantDetailImg);
+                    } else {
+                        binding.restaurantDetailImg.setImageResource(R.drawable.ic_no_image);
                     }
                 }
-            });
-
-            });
-
-        binding.restaurantDetailBtnWebsite.setOnClickListener(v -> {
-            Toast.makeText(this, "Website", Toast.LENGTH_SHORT).show();
-            //TODO: Add the intent Filter : restaurant.getUrl();
-        });
-        binding.restaurantDetailVicinity.setText(placesDetails.getResult().getVicinity());
-
-        List<Photo> photo = placesDetails.getResult().getPhotos();
-
-        if(photo != null) {
-            int mRefSize = photo.size();
-            String mRef = photo.get(mRefSize-1).getPhotoReference();
-
-            APIs = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
-            //
-            Glide
-                    .with(binding.restaurantDetailImg.getContext())
-                    .load(APIs)
-                    .centerCrop()
-                    .error(R.drawable.ic_no_image)
-                    .into(binding.restaurantDetailImg);
-        }else{
-            binding.restaurantDetailImg.setImageResource(R.drawable.ic_no_image);
-        }
-    }
 
     public void fetchDetailsRestaurant(){
         intent = getIntent();
-        String resultId = intent.getStringExtra("KEY_DETAIL");
+        resultId = intent.getStringExtra("KEY_DETAIL");
         Log.d(TAG, "fetchDetailsRestaurant: " + resultId);
         mainViewModel.FetchDetailsRestaurant(resultId);
         mainViewModel.getPlacesDetails().observe(this, this::bindData);
+
+    }
+
+    public void fetchRestaurantJoined() {
+        WorkmatesHelper.getWorkmate(mUid)
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            restaurantJoined = task.getResult().getString("restaurantJoined");
+                            Log.d(TAG, "onClick: restaurantJoined is " + restaurantJoined);
+                            if (!restaurantJoined.equals(restaurant.getPlaceId())) {
+                                binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_empty);
+                            }else{binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_ok);}
+
+                        }
+                    }
+                });
+    }
+
+    public void fetchRestaurantFav(){
+        WorkmatesHelper.getFavRestaurant(mUid, restaurant.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (task.getResult().size() > 0) {
+                        binding.restaurantDetailBtnLike.setImageResource(R.drawable.ic_baseline_star_24);
+
+                    } else {
+                        binding.restaurantDetailBtnLike.setImageResource(R.drawable.ic_baseline_star_outline_24);
+
+                    }
+
+                }
+            }
+        });
+    }
+
+    public void fetchWorkmateJoined(){
+        workmatesViewModel.fetchWorkmatesJoined(restaurant.getPlaceId());
     }
 
 }
