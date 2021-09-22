@@ -36,7 +36,7 @@
             android:layout_weight="5"
             android:singleLine="false"
             android:text="Jean-Jaques is eating French (Bon tacos)"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:autoSizeTextType="uniform" />
 
     </LinearLayout>

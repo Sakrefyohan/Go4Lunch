@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -24,7 +25,6 @@ import com.google.android.gms.common.api.ApiException;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -42,8 +42,8 @@ import java.util.Objects;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivityConnectionBinding;
-import sakref.yohan.go4lunch.models.Workmates;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
+import sakref.yohan.go4lunch.viewmodels.MainViewModel;
 
 import static sakref.yohan.go4lunch.utils.WorkmatesHelper.createUser;
 
@@ -56,6 +56,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private FirebaseUser user;
     private String userConnected;
     private WorkmatesHelper workmatesHelper;
+    private MainViewModel mainViewModel;
     private CallbackManager mCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -70,23 +71,19 @@ public class ConnectionActivity extends AppCompatActivity {
         setContentView(view);
         initFacebook();
         mAuth.useAppLanguage();
-
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
     }
+
+
 
     @Override
     protected void onStart() {
-        super.onStart();
         user = mAuth.getCurrentUser();
-
+        super.onStart();
         if (user != null ){
 
             //Check if workmate is on database, if not add it.
             fetchWorkmate();
-
-            userConnected = user.getEmail();
-            Log.d(TAG, "onStart: Connected with " + userConnected);
-            Toast.makeText(this, "Connected with : " + userConnected, Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, MainActivity.class));
 
         } else {
             Log.d(TAG, "onStart: No user Connected");
@@ -129,7 +126,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public void signInFacebook() {
         //Initialize Facebook Login button
-        fetchWorkmate();
+        //fetchWorkmate();
         LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
 
 
@@ -151,13 +148,12 @@ public class ConnectionActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
+                                user = mAuth.getCurrentUser();
                                 if (user.isEmailVerified()) {
                                     fetchWorkmate();
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 } else {
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(ConnectionActivity.this, task.getException().getMessage(),
+                                    Toast.makeText(ConnectionActivity.this, Objects.requireNonNull(task.getException()).getMessage(),
                                             Toast.LENGTH_SHORT).show();
                                 }
                             } else {
@@ -183,9 +179,9 @@ public class ConnectionActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                             finish();
-                            startActivity(new Intent(ConnectionActivity.this, MainActivity.class));
+                            fetchWorkmate();
+
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -243,12 +239,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                user = mAuth.getCurrentUser();
                                 fetchWorkmate();
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                Toast.makeText(getApplicationContext(),
-                                        "Connected by your Google account",
-                                        Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -272,8 +263,6 @@ public class ConnectionActivity extends AppCompatActivity {
         String email = binding.loginEmailText.getText().toString();
         String password = binding.passwordPasswordText.getText().toString();
 
-        Log.d(TAG, "Getting Information : " + email + " / " + password );
-
         mAuth.createUserWithEmailAndPassword(email, password)
 
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -282,13 +271,8 @@ public class ConnectionActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            user = mAuth.getCurrentUser();
                             user.sendEmailVerification();
                             fetchWorkmate();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            Toast.makeText(getApplicationContext(),
-                                    "Create a new account",
-                                    Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -303,51 +287,68 @@ public class ConnectionActivity extends AppCompatActivity {
 
     public void fetchWorkmate(){
 
-        Task<DocumentSnapshot> getWorkmateUID;
-        getWorkmateUID = WorkmatesHelper.getWorkmate(user.getUid());
-        getWorkmateUID.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        WorkmatesHelper.getWorkmate(user.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
+                    String workmatesName;
+                    Uri userPhotoUrl = user.getPhotoUrl();
+                    String photo;
+                    String email = user.getEmail();
+
                     if (!task.getResult().exists()) {
                         Log.d(TAG, "onComplete: Workmate doesn't exist");
-                        Uri userPhotoUrl = user.getPhotoUrl();
+
+
                         if(userPhotoUrl == null){
-                            createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar), "");
+                            Log.d(TAG, "onComplete: Workmate Have no picture adding one ... ");
+                            photo = getString(R.string.missing_Avatar);
                         }else{
-                            createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString(), "");
+                            photo = user.getPhotoUrl().toString();
+                            Log.d(TAG, "onComplete: Workmate Have a picture  :  " + photo);
                         }
+
+                        if(user.getDisplayName() == null || user.getDisplayName() == ""){
+                           workmatesName = "Ano Nyme";
+                            Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
+                        }else{
+                            workmatesName = user.getDisplayName();
+                            Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
+                        }
+
+
+                        createUser(user.getUid(), workmatesName, email, photo, "", "");
+
                         
                     }else{
+                        Log.d(TAG, "onComplete: Workmate Already Exist ... Cheking info : ");
+                        String username = task.getResult().getString("workmatesName");
+                        if(username == null || username == ""){
+                            workmatesName = "Ano Nyme";
+                            Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
+                        }else{
+                            workmatesName = username;
+                            Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
+                        }
                         String restaurantJoined = task.getResult().getString("restaurantJoined");
-                        Log.d(TAG, "onComplete: Workmate Already Exist");
+                        String restaurantName = task.getResult().getString("restaurantName");
+                        photo = task.getResult().getString("urlPicture");
                     }
+                    Log.d(TAG, "onComplete: Workmates 2  / " + mainViewModel.getUserAvatar() + " / " + mainViewModel.getUserMail() + " / " + mainViewModel.getUserName());
 
+
+
+                    Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
+                    intentUser.putExtra("username", workmatesName);
+                    intentUser.putExtra("email", email);
+                    intentUser.putExtra("photoUrl", photo);
+                    intentUser.putExtra("uid", user.getUid());
+                    startActivity(intentUser);
                 }
             }
         });
 
-
-        /*
-        getWorkmateUID.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Workmates currentWorkmate = documentSnapshot.toObject(Workmates.class);
-                Log.d(TAG, "fetchWorkmate : onSuccess : inside the fetch :  " + currentWorkmate);
-
-
-
-                Uri userPhotoUrl = user.getPhotoUrl();
-
-                if(userPhotoUrl == null){
-                    createUser(user.getUid(), user.getDisplayName(), getString(R.string.missing_Avatar), "null");
-                }else{
-                    createUser(user.getUid(), user.getDisplayName(), user.getPhotoUrl().toString(), "null");
-                }
-            }
-        });
-*/
-        getWorkmateUID.addOnFailureListener(this.onFailureListener());
+        WorkmatesHelper.getWorkmate(user.getUid()).addOnFailureListener(this.onFailureListener());
 
 
     }

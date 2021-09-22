@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".ui.ConnectionActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,19 +12,28 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
 
-
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_drawer"
             android:layout_width="match_parent"
             app:navigationIcon="@drawable/ic_baseline_dehaze_24"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="I'm Hungry!"
+            app:menu="@menu/menu_actionbar"/>
+<!--
+        <fragment android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
+-->
+
 
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

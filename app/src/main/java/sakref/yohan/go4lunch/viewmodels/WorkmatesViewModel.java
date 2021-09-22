@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -20,19 +21,18 @@ import java.util.List;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.models.newapiplaces.PlacesDetails;
+import sakref.yohan.go4lunch.repository.PlacesDetailsRepository;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 
 public class WorkmatesViewModel extends ViewModel {
 
 
     private MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
+    private String placeName;
     private static String TAG = "WorkmatesViewModel";
 
     public void fetchWorkmates(){
-        Log.d(TAG, "fetchWorkmates: Inside the fetchWorkmates");
-
-        Task<QuerySnapshot> workmateGetted = WorkmatesHelper.getAllWorkmate();
-        Log.d(TAG, "fetchWorkmates: Inside the fetchWorkmates : getAllWorkmate : " + workmateGetted);
 
     WorkmatesHelper.getAllWorkmate().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
         @Override
@@ -68,9 +68,13 @@ public class WorkmatesViewModel extends ViewModel {
 
     }
 
+    public void setPlaceName(String placeName){
+        this.placeName = placeName;
+    }
 
-
-
+    public String getPlaceName(){
+        Log.d(TAG, "getPlaceName: " + placeName);
+        return placeName;}
 
 
     public MutableLiveData<List<Workmates>> getWorkmates() {return mWorkmates;}

@@ -61,6 +61,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     Task<DocumentSnapshot> mCurrentWorkmate;
     String resultId;
     String restaurantJoined;
+    String restaurantName;
     String restaurantFav;
 
     @Override
@@ -119,9 +120,11 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                 Log.d(TAG, "onClick: restaurantJoined is " + restaurantJoined);
                                 binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_ok);
                                 WorkmatesHelper.updateRestaurantJoined(restaurant.getPlaceId(), mUid);
+                                WorkmatesHelper.updateRestaurantName(restaurant.getName(), mUid);
                             } else {
                                 Log.d(TAG, "onClick: restaurantJoined = EEEELSEEEE");
                                 WorkmatesHelper.updateRestaurantJoined("", mUid);
+                                WorkmatesHelper.updateRestaurantName("", mUid);
                                 binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_empty);
 
                             }

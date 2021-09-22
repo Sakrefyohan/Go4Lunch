@@ -48,6 +48,8 @@ public class ListViewFragment extends Fragment {
 
         FragmentViewBinding binding = FragmentViewBinding.inflate(getLayoutInflater());
        View view = binding.getRoot();
+        ((MainActivity) getActivity()).setActionBarTitle("I'm Hungry!");
+
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         Log.d(TAG, "onCreateView: init mainViewModel : " + mainViewModel);
 
@@ -58,7 +60,6 @@ public class ListViewFragment extends Fragment {
            binding.fragmentViewRecycler.setAdapter(adapters);
            binding.fragmentViewRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            //TODO: Ajout des distance des restaurant + Nb de personne
         });
 
         return view;

@@ -19,6 +19,7 @@ import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewBinding;
 import sakref.yohan.go4lunch.databinding.FragmentWorkmatesBinding;
 import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.ui.MainActivity;
 import sakref.yohan.go4lunch.ui.adapters.WorkmatesFragmentAdapters;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 import sakref.yohan.go4lunch.viewmodels.MainViewModel;
@@ -34,7 +35,9 @@ public class WorkmatesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(getLayoutInflater());
+
         View view = binding.getRoot();
+        ((MainActivity) getActivity()).setActionBarTitle("Available workmates");
         workmatesViewModel= new ViewModelProvider(getActivity()).get(WorkmatesViewModel.class);
         workmatesViewModel.fetchWorkmates();
 
@@ -43,9 +46,6 @@ public class WorkmatesFragment extends Fragment {
             WorkmatesFragmentAdapters adapters = new WorkmatesFragmentAdapters(workmates, false);
             binding.fragmentWorkmatesRecycler.setAdapter(adapters);
             binding.fragmentWorkmatesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
-            //TODO: Ajouter nom du restaurant + click sur le restaurant
-
         });
 
         return view;

@@ -22,8 +22,7 @@ public class WorkmatesHelper {
     private static final String COLLECTION_NAME = "workmates";
     private static final String SUB_COLLECTION_NAME = "favrestaurant";
     private static String TAG = "WorkmatesHelper";
-    public static WorkmatesViewModel workmatesViewModel;
-    private String restaurantJoined;
+
     // --- COLLECTION REFERENCE ---
 
     public static CollectionReference getWorkmatesCollection() {
@@ -33,8 +32,8 @@ public class WorkmatesHelper {
 
     // --- CREATE ---
 
-    public static Task<Void> createUser(String uid, String username, String urlPicture, String restaurantJoined) {
-        Workmates workmateToCreate = new Workmates(uid, username, urlPicture, restaurantJoined);
+    public static Task<Void> createUser(String uid, String username, String email, String urlPicture, String restaurantJoined, String restaurantName) {
+        Workmates workmateToCreate = new Workmates(uid, username, email, urlPicture, restaurantJoined, restaurantName);
         return WorkmatesHelper.getWorkmatesCollection().document(uid).set(workmateToCreate);
     }
 
@@ -72,8 +71,6 @@ public class WorkmatesHelper {
     }
 
 
-
-
     // --- UPDATE ---
 
     public static Task<Void> updateWorkmateName(String username, String uid) {
@@ -82,7 +79,10 @@ public class WorkmatesHelper {
 
     public static Task<Void> updateRestaurantJoined(String restaurant, String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurant);
+    }
 
+    public static Task<Void> updateRestaurantName(String restaurant, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantName", restaurant);
     }
 
     // --- DELETE ---
@@ -99,5 +99,6 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurantJoined);
 
     }
+
 
 }

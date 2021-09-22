@@ -153,6 +153,6 @@
     <string name="signInWithEmailFailureVerify">Please, verify your mail before continuing</string>
     <string name="error_unknown_error">error unknown</string>
     <string name="missing_Avatar">https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/425px-Missing_avatar.svg.png</string>
-
+    <string name="api_key">AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s</string>
 
 </resources>

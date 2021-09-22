@@ -4,16 +4,28 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
 import sakref.yohan.go4lunch.models.OpeningHours;
 import sakref.yohan.go4lunch.models.Result;
+import sakref.yohan.go4lunch.models.Workmates;
 import sakref.yohan.go4lunch.ui.fragments.MapsFragment;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 
 public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
 
@@ -107,6 +119,20 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
         mDistance.setText(distance + "m");
 
 
+        WorkmatesHelper.getAllJoiningWorkmate(result.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    int numberPeople = task.getResult().size();
+
+                    mPeople.setText("👤 (" + numberPeople + ")");
+                }
+
+            }
+        });
+
+
+
     }
 
     private int distance(double latRestau, double longRestau, double lat2, double lon2) {
@@ -133,7 +159,6 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
         return (rad * 180.0 / Math.PI);
     }
 
-    //TODO: Firestore call + filtre
 }
 
 

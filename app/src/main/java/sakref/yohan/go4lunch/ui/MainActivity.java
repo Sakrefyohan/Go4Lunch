@@ -1,38 +1,87 @@
 package sakref.yohan.go4lunch.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+
 import sakref.yohan.go4lunch.R;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
+import sakref.yohan.go4lunch.viewmodels.MainViewModel;
+import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
-public class MainActivity extends AppCompatActivity /*implements NavigationView.OnNavigationItemSelectedListener*/ {
+import static android.content.ContentValues.TAG;
 
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 123;
+    private MainViewModel mainViewModel;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private final String TAG = "Main Activity";
+    TextView navDrawerWorkmates;
+    ImageView navDrawerAvatar;
+    TextView navDrawerMail;
+    private String username;
+    private String email;
+    private String photoUrl;
+    private String mUid;
+    private String restaurantJoinedName;
+    private String restaurantJoinedUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_drawer);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view_drawer);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -41,13 +90,19 @@ public class MainActivity extends AppCompatActivity /*implements NavigationView.
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-/*
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        this.getUserConnected();
         this.configureToolBar();
         this.configureDrawerLayout();
         this.configureNavigationView();
-/*
+        this.initializePlacesAutocomplete();
+        this.updateDrawerText();
+
 
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -67,10 +122,24 @@ public class MainActivity extends AppCompatActivity /*implements NavigationView.
 
         switch (id){
             case R.id.nav_yourlunch:
+                mUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                Intent intent = new Intent(this, RestaurantDetailsActivity.class);
+                intent.putExtra("KEY_DETAIL", restaurantJoinedUid);
+                intent.putExtra("KEY_DETAIL_NAME", restaurantJoinedName);
+                this.startActivity(intent);
+
+
                 break;
             case R.id.nav_settings:
+                Intent intentSetting = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intentSetting);
                 break;
             case R.id.nav_logout:
+                FirebaseAuth.getInstance().signOut();
+                LoginManager.getInstance().logOut();
+                Intent i = new Intent(this, ConnectionActivity.class);
+                startActivity(i);
                 break;
             default:
                 break;
@@ -83,13 +152,13 @@ public class MainActivity extends AppCompatActivity /*implements NavigationView.
 
     // 1 - Configure Toolbar
     private void configureToolBar(){
-        this.toolbar = (Toolbar) findViewById(R.id.toolbar_drawer);
+        this.toolbar = findViewById(R.id.toolbar_drawer);
         setSupportActionBar(toolbar);
     }
 
     // 2 - Configure Drawer Layout
     private void configureDrawerLayout(){
-        this.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        this.drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -97,8 +166,118 @@ public class MainActivity extends AppCompatActivity /*implements NavigationView.
 
     // 3 - Configure NavigationView
     private void configureNavigationView(){
-        this.navigationView = (NavigationView) findViewById(R.id.nav_view_drawer);
+        this.navigationView = findViewById(R.id.nav_view_drawer);
+
         navigationView.setNavigationItemSelectedListener(this);
+        navDrawerWorkmates = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_workmates);
+        navDrawerAvatar = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_avatar);
+        navDrawerMail = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_mail);
+        Log.d(TAG, "configureNavigationView: " + navDrawerWorkmates + " / "  + navDrawerAvatar  + " / " + navDrawerMail);
     }
-*/
-}}
+
+    private void initializePlacesAutocomplete(){
+        String apiKey = getString(R.string.api_key);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
+        }
+
+        PlacesClient placesClient = Places.createClient(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_actionbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.button_search) {
+            Log.d(TAG, "onOptionsItemSelected: searchView Man");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void startAutocompleteActivity(MenuItem item) {
+        Log.d(TAG, "startAutocompleteActivity: test click" + item.getTitle());
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.OVERLAY,
+                Arrays.asList(Place.Field.ID, Place.Field.NAME))
+                .setCountry("FR")
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                /*
+                //TODO : Add
+                .setLocationBias(RectangularBounds.newInstance(
+                        new LatLng(-33, 151),
+                        new LatLng(-34, 152)
+                ))*/
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+         
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK){
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.d(TAG, "onActivityResult: Restaurant : " + place.getId() + " " + place.getName());
+
+            }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+                Status status = Autocomplete.getStatusFromIntent(data);
+            }else if (resultCode == RESULT_CANCELED){
+                Log.d(TAG, "onActivvityResult: CANCELED WRITTING SEARCH");
+            }
+        }
+    }
+
+    public void setActionBarTitle(String title){
+        toolbar.setTitle(title);
+    }
+
+    public void updateDrawerText(){
+
+
+        navDrawerWorkmates.setText(username);
+        navDrawerMail.setText(email);
+        Glide
+                .with(this)
+                .load(photoUrl)
+                .centerCrop()
+                .error(R.drawable.ic_no_image)
+                .into(navDrawerAvatar);
+
+    }
+
+    public void getUserConnected (){
+        username = getIntent().getStringExtra("username");
+        email = getIntent().getStringExtra("email");
+        photoUrl = getIntent().getStringExtra("photoUrl");
+        mUid = getIntent().getStringExtra("uid");
+        Log.d(TAG, "getUserConnected: " + username + " / "  + email + " / "  + photoUrl + " / "  + mUid);
+
+        WorkmatesHelper.getWorkmate(mUid)
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            restaurantJoinedName = task.getResult().getString("restaurantName");
+                            restaurantJoinedUid = task.getResult().getString("restaurantJoined");
+                        }
+                    }
+                });
+
+    }
+
+}
