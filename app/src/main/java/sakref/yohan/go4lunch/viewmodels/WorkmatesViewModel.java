@@ -68,6 +68,10 @@ public class WorkmatesViewModel extends ViewModel {
 
     }
 
+    public void createNotification(Boolean activate){
+
+    }
+
     public void setPlaceName(String placeName){
         this.placeName = placeName;
     }

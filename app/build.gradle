@@ -104,6 +104,9 @@ dependencies {
     //Autocomplete
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
+    //Notification
+    implementation 'androidx.core:core:1.6.0'
+
 
 
 

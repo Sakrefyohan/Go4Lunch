@@ -2,6 +2,7 @@ package sakref.yohan.go4lunch.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlarmManager;
@@ -11,8 +12,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivityMainBinding;
@@ -31,6 +34,9 @@ import sakref.yohan.go4lunch.models.Workmates;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
 public class SettingsActivity extends AppCompatActivity {
+    private static final String CHANNEL_ID = "0";
+    private static final String TAG = "SettingsActivity";
+    private static final int notificationId = 1;
     private ActivitySettingBinding binding;
     private WorkmatesViewModel workmateViewModel;
     private Workmates workmates;
@@ -50,26 +56,24 @@ public class SettingsActivity extends AppCompatActivity {
 
         //initDB();
 
-        //initListener();
+        initListener();
 
-    } 
-/*
+    }
+
+
+
     private void initListener(){
         binding.notificationSwitchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                workmateViewModel.updateNotification(isChecked);
                 if(isChecked) {
-                    if (workmate != null && workmate.getCurrentRestaurant() != null){
-                        showWorkmatesEatingNotification();
-                    }
-                    else{
-                        binding.notificationSwitchButton.setChecked(false);
-                    }
+                    setNotification();
+
                 }
                 else{
-                    scheduleNotification(getNotification(""));
+                    Toast.makeText(SettingsActivity.this, "Notification deactivated", Toast.LENGTH_SHORT).show();
                     alarmManager.cancel(pendingIntent);
+                    Log.d(TAG, "onCheckedChanged: "+ alarmManager);
                 }
             }
         });
@@ -81,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     private void initDB(){
         workmateViewModel.getCurrentUserFromDB(user.getUid()).observe(this, workmate -> {
             this.workmate = workmate;
@@ -102,14 +106,27 @@ public class SettingsActivity extends AppCompatActivity {
             scheduleNotification(getNotification(workmateEating.toString()));
         });
     }
+*/
 
-    private void scheduleNotification(Notification notification) {
 
-        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+    public void setNotification(){
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, ConnectionActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(SettingsActivity.this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.bowl_logo)
+                .setContentTitle("A table, pensez à choisir un restaurant!")
+                .setContentText("Avez-vous choisis un restaurant pour ce midi ?")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                // Set the intent that will fire when the user taps the notification
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SettingsActivity.this);
+        managerCompat.notify(notificationId, builder.build());
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -121,22 +138,10 @@ public class SettingsActivity extends AppCompatActivity {
         alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+
+
+
     }
 
-    private Notification getNotification(String workmateEatingHere) {
-        if(workmateEatingHere.equals("will eat here."))
-            workmateEatingHere = getString(R.string.no_one_eating);
-        else
-            workmateEatingHere = workmateEatingHere.replace(",will eat here.",getString(R.string.will_eat_here));
 
-        String name = getString(R.string.channel_name);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, name)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle("Go4Lunch")
-                .setContentText(workmateEatingHere)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        return builder.build();
-    }*/
 }

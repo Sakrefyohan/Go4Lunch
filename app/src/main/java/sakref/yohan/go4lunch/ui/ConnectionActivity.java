@@ -1,7 +1,10 @@
 package sakref.yohan.go4lunch.ui;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +53,7 @@ import static sakref.yohan.go4lunch.utils.WorkmatesHelper.createUser;
 public class ConnectionActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
+    private static final String CHANNEL_ID = "0";
     private final String TAG = "connection";
     private ActivityConnectionBinding binding;
     private FirebaseAuth mAuth;
@@ -72,6 +76,7 @@ public class ConnectionActivity extends AppCompatActivity {
         initFacebook();
         mAuth.useAppLanguage();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        createNotificationChannel();
     }
 
 
@@ -351,6 +356,22 @@ public class ConnectionActivity extends AppCompatActivity {
         WorkmatesHelper.getWorkmate(user.getUid()).addOnFailureListener(this.onFailureListener());
 
 
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Rappel de choix";
+            String description = "Rappel de choix de restaurant";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     // --------------------
