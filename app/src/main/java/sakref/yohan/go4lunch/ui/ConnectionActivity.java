@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.ApiException;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -35,6 +36,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 
@@ -135,6 +137,79 @@ public class ConnectionActivity extends AppCompatActivity {
         LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
 
 
+    }
+
+    public void signInTwitter (){
+        Toast.makeText(this, "Connection à twitter", Toast.LENGTH_SHORT).show();
+        OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
+        Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
+        if (pendingResultTask != null) {
+            // There's something already here! Finish the sign-in for your user.
+            pendingResultTask
+                    .addOnSuccessListener(
+                            new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    // User is signed in.
+
+                                    String email = authResult.getUser().getEmail();
+                                    String displayName = authResult.getUser().getDisplayName();
+                                    String uid = authResult.getUser().getUid();
+                                    Uri photoUrl = authResult.getUser().getPhotoUrl();
+
+
+                                    Log.d(TAG, "Twitter : onSuccess: " + email);
+                                    Log.d(TAG, "Twitter : onSuccess: " + displayName);
+                                    Log.d(TAG, "Twitter : onSuccess: " + uid);
+                                    Log.d(TAG, "Twitter : onSuccess: " + photoUrl);
+
+                                    // IdP data available in
+                                    // authResult.getAdditionalUserInfo().getProfile().
+                                    // The OAuth access token can also be retrieved:
+                                    // authResult.getCredential().getAccessToken().
+                                    // The OAuth secret can be retrieved by calling:
+                                    // authResult.getCredential().getSecret().
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "Twitter : onFailure: 1st Else" + e);
+                                    // Handle failure.
+                                }
+                            });
+        } else {
+            Log.d(TAG, "signInTwitter: Else");
+            mAuth
+                    .startActivityForSignInWithProvider(/* activity= */ this, provider.build())
+                    .addOnSuccessListener(
+                            new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    Log.d(TAG, "signInTwitter : onSuccess: Else OnSuccess ");
+
+                                    String email = authResult.getUser().getEmail();
+                                    String displayName = authResult.getUser().getDisplayName();
+                                    String uid = authResult.getUser().getUid();
+                                    Uri photoUrl = authResult.getUser().getPhotoUrl();
+
+
+                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + email);
+                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + displayName);
+                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + uid);
+                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + photoUrl);
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "signInTwitter : onFailure: Else OnFailure : " + e);
+                                    // Handle failure.
+                                }
+                            });
+        }
     }
 
     public void signin(){
