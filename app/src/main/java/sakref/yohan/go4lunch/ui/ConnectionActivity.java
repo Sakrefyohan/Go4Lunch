@@ -82,13 +82,12 @@ public class ConnectionActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onStart() {
         user = mAuth.getCurrentUser();
         super.onStart();
-        if (user != null ){
 
+        if (user != null) {
             //Check if workmate is on database, if not add it.
             fetchWorkmate();
 
@@ -134,12 +133,12 @@ public class ConnectionActivity extends AppCompatActivity {
     public void signInFacebook() {
         //Initialize Facebook Login button
         //fetchWorkmate();
-        LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email","public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(ConnectionActivity.this, Arrays.asList("email", "public_profile", "user_friends"));
 
 
     }
 
-    public void signInTwitter (){
+    public void signInTwitter() {
         Toast.makeText(this, "Connection à twitter", Toast.LENGTH_SHORT).show();
         OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
         Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
@@ -150,25 +149,8 @@ public class ConnectionActivity extends AppCompatActivity {
                             new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
-                                    // User is signed in.
-
-                                    String email = authResult.getUser().getEmail();
-                                    String displayName = authResult.getUser().getDisplayName();
-                                    String uid = authResult.getUser().getUid();
-                                    Uri photoUrl = authResult.getUser().getPhotoUrl();
-
-
-                                    Log.d(TAG, "Twitter : onSuccess: " + email);
-                                    Log.d(TAG, "Twitter : onSuccess: " + displayName);
-                                    Log.d(TAG, "Twitter : onSuccess: " + uid);
-                                    Log.d(TAG, "Twitter : onSuccess: " + photoUrl);
-
-                                    // IdP data available in
-                                    // authResult.getAdditionalUserInfo().getProfile().
-                                    // The OAuth access token can also be retrieved:
-                                    // authResult.getCredential().getAccessToken().
-                                    // The OAuth secret can be retrieved by calling:
-                                    // authResult.getCredential().getSecret().
+                                    user = authResult.getUser();
+                                    fetchWorkmate();
                                 }
                             })
                     .addOnFailureListener(
@@ -188,17 +170,8 @@ public class ConnectionActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
                                     Log.d(TAG, "signInTwitter : onSuccess: Else OnSuccess ");
-
-                                    String email = authResult.getUser().getEmail();
-                                    String displayName = authResult.getUser().getDisplayName();
-                                    String uid = authResult.getUser().getUid();
-                                    Uri photoUrl = authResult.getUser().getPhotoUrl();
-
-
-                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + email);
-                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + displayName);
-                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + uid);
-                                    Log.d(TAG, "Twitter : Else / OnSuccess: " + photoUrl);
+                                    user = authResult.getUser();
+                                    fetchWorkmate();
                                 }
                             })
                     .addOnFailureListener(
@@ -212,7 +185,7 @@ public class ConnectionActivity extends AppCompatActivity {
         }
     }
 
-    public void signin(){
+    public void signin() {
 
         String email = binding.loginEmailText.getText().toString();
         String password = binding.passwordPasswordText.getText().toString();
@@ -220,7 +193,7 @@ public class ConnectionActivity extends AppCompatActivity {
         if (email.isEmpty() || password.isEmpty()) {
 
             Toast.makeText(this, "Please Fill email or password", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -338,7 +311,7 @@ public class ConnectionActivity extends AppCompatActivity {
     }
 
 
-    public void signup(){
+    public void signup() {
 
         String email = binding.loginEmailText.getText().toString();
         String password = binding.passwordPasswordText.getText().toString();
@@ -353,7 +326,6 @@ public class ConnectionActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             user = mAuth.getCurrentUser();
                             fetchWorkmate();
-                            user.sendEmailVerification();
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -367,7 +339,7 @@ public class ConnectionActivity extends AppCompatActivity {
                 });
     }
 
-    public void fetchWorkmate(){
+    public void fetchWorkmate() {
 
         WorkmatesHelper.getWorkmate(user.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -380,20 +352,21 @@ public class ConnectionActivity extends AppCompatActivity {
 
                     if (!task.getResult().exists()) {
                         Log.d(TAG, "onComplete: Workmate doesn't exist");
+                        user.sendEmailVerification();
 
 
-                        if(userPhotoUrl == null){
+                        if (userPhotoUrl == null) {
                             Log.d(TAG, "onComplete: Workmate Have no picture adding one ... ");
                             photo = getString(R.string.missing_Avatar);
-                        }else{
+                        } else {
                             photo = user.getPhotoUrl().toString();
                             Log.d(TAG, "onComplete: Workmate Have a picture  :  " + photo);
                         }
 
-                        if(user.getDisplayName() == null || user.getDisplayName() == ""){
-                           workmatesName = "Ano Nyme";
+                        if (user.getDisplayName() == null || user.getDisplayName() == "") {
+                            workmatesName = "Ano Nyme";
                             Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
-                        }else{
+                        } else {
                             workmatesName = user.getDisplayName();
                             Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
                         }
@@ -401,72 +374,77 @@ public class ConnectionActivity extends AppCompatActivity {
 
                         createUser(user.getUid(), workmatesName, email, photo, "", "");
 
-                        
-                    }else{
+
+                    } else {
                         Log.d(TAG, "onComplete: Workmate Already Exist ... Cheking info : ");
-                        String username = task.getResult().getString("workmatesName");
-                        if(username == null || username == ""){
-                            workmatesName = "Ano Nyme";
-                            Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
-                        }else{
-                            workmatesName = username;
-                            Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
+
+                        if (user.isEmailVerified()) {
+
+
+                            String username = task.getResult().getString("workmatesName");
+                            if (username == null || username == "") {
+                                workmatesName = "Ano Nyme";
+                                Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
+                            } else {
+                                workmatesName = username;
+                                Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
+                            }
+                            String restaurantJoined = task.getResult().getString("restaurantJoined");
+                            String restaurantName = task.getResult().getString("restaurantName");
+                            photo = task.getResult().getString("urlPicture");
+
+                            Log.d(TAG, "onComplete: Workmates 2  / " + mainViewModel.getUserAvatar() + " / " + mainViewModel.getUserMail() + " / " + mainViewModel.getUserName());
+
+
+                            Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
+                            intentUser.putExtra("username", workmatesName);
+                            intentUser.putExtra("email", email);
+                            intentUser.putExtra("photoUrl", photo);
+                            intentUser.putExtra("uid", user.getUid());
+                            startActivity(intentUser);
+
+                        } else {
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Please Verifiy your mail", Toast.LENGTH_SHORT).show();
                         }
-                        String restaurantJoined = task.getResult().getString("restaurantJoined");
-                        String restaurantName = task.getResult().getString("restaurantName");
-                        photo = task.getResult().getString("urlPicture");
+
                     }
-                    Log.d(TAG, "onComplete: Workmates 2  / " + mainViewModel.getUserAvatar() + " / " + mainViewModel.getUserMail() + " / " + mainViewModel.getUserName());
-
-
-
-                    Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
-                    intentUser.putExtra("username", workmatesName);
-                    intentUser.putExtra("email", email);
-                    intentUser.putExtra("photoUrl", photo);
-                    intentUser.putExtra("uid", user.getUid());
-                    startActivity(intentUser);
                 }
             }
         });
-
         WorkmatesHelper.getWorkmate(user.getUid()).addOnFailureListener(this.onFailureListener());
-
-
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Rappel de choix";
-            String description = "Rappel de choix de restaurant";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+        private void createNotificationChannel () {
+            // Create the NotificationChannel, but only on API 26+ because
+            // the NotificationChannel class is new and not in the support library
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "Rappel de choix";
+                String description = "Rappel de choix de restaurant";
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+                channel.setDescription(description);
+                // Register the channel with the system; you can't change the importance
+                // or other notification behaviors after this
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        // --------------------
+        // ERROR HANDLER
+        // --------------------
+
+        protected OnFailureListener onFailureListener () {
+            return new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "fetchWorkmate : onFailure: " + e);
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+                }
+            };
         }
     }
-
-    // --------------------
-    // ERROR HANDLER
-    // --------------------
-
-    protected OnFailureListener onFailureListener(){
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "fetchWorkmate : onFailure: " + e);
-                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
-            }
-        };
-    }
-
-
-}
 
 
 

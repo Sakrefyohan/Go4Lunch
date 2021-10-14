@@ -22,6 +22,7 @@ import sakref.yohan.go4lunch.databinding.ActivityMainBinding;
 //import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
 import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
 import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.utils.NotificationReceiver;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -67,13 +68,15 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    setNotification();
+
+                    setBetterNotification();
 
                 }
                 else{
-                    Toast.makeText(SettingsActivity.this, "Notification deactivated", Toast.LENGTH_SHORT).show();
+                    // TODO: 12/10/2021 Decocher la case
+                    /*Toast.makeText(SettingsActivity.this, "Notification deactivated", Toast.LENGTH_SHORT).show();
                     alarmManager.cancel(pendingIntent);
-                    Log.d(TAG, "onCheckedChanged: "+ alarmManager);
+                    Log.d(TAG, "onCheckedChanged: "+ alarmManager);*/
                 }
             }
         });
@@ -109,12 +112,13 @@ public class SettingsActivity extends AppCompatActivity {
 */
 
 
-
+/*
     public void setNotification(){
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, ConnectionActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(SettingsActivity.this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.bowl_logo)
@@ -125,21 +129,45 @@ public class SettingsActivity extends AppCompatActivity {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
+
+        //Intent intentAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+
+
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SettingsActivity.this);
         managerCompat.notify(notificationId, builder.build());
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
-        calendar.set(Calendar.MINUTE, 26);
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 50);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + 5000;
+        //long futureInMillis = SystemClock.elapsedRealtime() + 5000;
 
-        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        //alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        alarmManager = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, alarmIntent);
 
 
+
+    }
+    */
+
+    // TODO: 12/10/2021 Search for Settings UI  
+
+    public void setBetterNotification(){
+        Calendar calendar = Calendar.getInstance();
+        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 00);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 
     }
 
