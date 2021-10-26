@@ -60,6 +60,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     Result restaurant;
     Task<DocumentSnapshot> mCurrentWorkmate;
     String resultId;
+    String resultAddress;
     String restaurantJoined;
     String restaurantName;
     String restaurantFav;
@@ -121,10 +122,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                 binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_ok);
                                 WorkmatesHelper.updateRestaurantJoined(restaurant.getPlaceId(), mUid);
                                 WorkmatesHelper.updateRestaurantName(restaurant.getName(), mUid);
+                                WorkmatesHelper.updateRestaurantAddress(resultAddress, mUid);
                             } else {
                                 Log.d(TAG, "onClick: restaurantJoined = EEEELSEEEE");
                                 WorkmatesHelper.updateRestaurantJoined("", mUid);
                                 WorkmatesHelper.updateRestaurantName("", mUid);
+                                WorkmatesHelper.updateRestaurantAddress("", mUid);
                                 binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_empty);
 
                             }
@@ -143,7 +146,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                         Log.d(TAG, "onComplete: delete ok");
 
                                     } else {
-                                        WorkmatesHelper.addFavRestaurant(restaurant.getPlaceId(), mUid, restaurant.getName());
+                                        WorkmatesHelper.addFavRestaurant(restaurant.getPlaceId(), mUid, restaurant.getName(), restaurant.getFormattedAddress());
                                         Log.d(TAG, "onComplete: Adding ok");
 
                                     }
@@ -190,6 +193,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     public void fetchDetailsRestaurant(){
         intent = getIntent();
         resultId = intent.getStringExtra("KEY_DETAIL");
+        resultAddress = intent.getStringExtra("KEY_DETAIL_TITLE");
         Log.d(TAG, "fetchDetailsRestaurant: " + resultId);
         mainViewModel.FetchDetailsRestaurant(resultId);
         mainViewModel.getPlacesDetails().observe(this, this::bindData);
@@ -203,7 +207,10 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             restaurantJoined = task.getResult().getString("restaurantJoined");
-                            Log.d(TAG, "onClick: restaurantJoined is " + restaurantJoined);
+                            restaurantName = task.getResult().getString("restaurantName");
+                            Log.d(TAG, "onClick: restaurantName is " + restaurantName);
+                            Log.d(TAG, "onClick: restaurantID is " + restaurantJoined);
+                            Log.d(TAG, "onClick: restaurant selected is  " + restaurant.getPlaceId());
                             if (!restaurantJoined.equals(restaurant.getPlaceId())) {
                                 binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_empty);
                             }else{binding.restaurantDetailBtnChoose.setImageResource(R.drawable.ic_check_ok);}

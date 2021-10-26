@@ -37,10 +37,11 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).set(workmateToCreate);
     }
 
-    public static Task<Void> addFavRestaurant(String restaurantUid, String uid, String restaurantName) {
+    public static Task<Void> addFavRestaurant(String restaurantUid, String uid, String restaurantName, String restaurantAddress) {
         Map<String, Object> restaurantFav = new HashMap<>();
         restaurantFav.put("restaurant", restaurantName);
         restaurantFav.put("restaurantUid", restaurantUid);
+        restaurantFav.put("restaurantAddress", restaurantAddress);
         return WorkmatesHelper.getWorkmatesCollection().document(uid).collection(SUB_COLLECTION_NAME).document(restaurantUid).set(restaurantFav);
     }
 
@@ -77,12 +78,24 @@ public class WorkmatesHelper {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("workmatesName", username);
     }
 
+    public static Task<Void> updateWorkmatEmail(String email, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("workmatesEmail", email);
+    }
+
+    public static Task<Void> updateWorkmatePicture(String urlPicture, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("urlPicture", urlPicture);
+    }
+
     public static Task<Void> updateRestaurantJoined(String restaurant, String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantJoined", restaurant);
     }
 
     public static Task<Void> updateRestaurantName(String restaurant, String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantName", restaurant);
+    }
+
+    public static Task<Void> updateRestaurantAddress(String restaurant, String uid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(uid).update("restaurantAddress", restaurant);
     }
 
     // --- DELETE ---

@@ -65,6 +65,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     public LatLng mPlaces;
     public String pName;
     public String pUid;
+    public String pAddress;
     public int pSize;
     public double pLat;
     public double pLng;
@@ -154,6 +155,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14));
                         mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
 
+
                             pSize = places.getResults().size();
                             map.setOnMarkerClickListener(MapsFragment.this::onMarkerClick);
                             WorkmatesHelper.getAllWorkmate().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -181,12 +183,13 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
                                                 pName = places.getResults().get(j).getName();
                                                 pUid = places.getResults().get(j).getPlaceId();
+                                                pAddress = places.getResults().get(j).getVicinity();
 
                                                 pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
                                                 pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
                                                 mPlaces = new LatLng(pLat, pLng);
                                                 workmatesViewModel.setPlaceName(pName);
-                                                marker = map.addMarker(new MarkerOptions().position(mPlaces).title(pName).flat(false).snippet(String.valueOf(places.getResults().get(j).getPlaceId())).icon(pinColor));
+                                                marker = map.addMarker(new MarkerOptions().position(mPlaces).title(pAddress).flat(false).snippet(String.valueOf(places.getResults().get(j).getPlaceId())).icon(pinColor));
 
                                             }
                                         }
@@ -243,6 +246,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
         Intent intent = new Intent(getContext(), RestaurantDetailsActivity.class);
         intent.putExtra("KEY_DETAIL", marker.getSnippet());
+        intent.putExtra("KEY_DETAIL_TITLE",marker.getTitle());
         getContext().startActivity(intent);
         return true;
     }

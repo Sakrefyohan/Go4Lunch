@@ -23,4 +23,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("sakref.yohan.go4lunch", appContext.getPackageName());
     }
+
+    //todo search for barista
 }

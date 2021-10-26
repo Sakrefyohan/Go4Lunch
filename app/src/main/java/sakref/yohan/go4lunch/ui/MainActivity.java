@@ -2,6 +2,7 @@ package sakref.yohan.go4lunch.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -60,6 +61,7 @@ import static android.content.ContentValues.TAG;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int AUTOCOMPLETE_REQUEST_CODE = 123;
+
     private MainViewModel mainViewModel;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String mUid;
     private String restaurantJoinedName;
     private String restaurantJoinedUid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.configureNavigationView();
         this.initializePlacesAutocomplete();
         this.updateDrawerText();
+        SharedPreferences sharedPreferences = getSharedPreferences("notificationActive", MODE_PRIVATE);
+        Log.d(TAG, "onCreate: SharedPreferences = " + sharedPreferences.getBoolean("notificationActive",false));
+
+
 
 
     }
@@ -114,6 +121,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getUserConnected();
+    }
+
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
 
@@ -123,13 +136,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id){
             case R.id.nav_yourlunch:
                 mUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                if (restaurantJoinedUid.equals("")){
+                    Toast.makeText(this, "You have not selected a restaurant yet.", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(this, RestaurantDetailsActivity.class);
-                intent.putExtra("KEY_DETAIL", restaurantJoinedUid);
-                intent.putExtra("KEY_DETAIL_NAME", restaurantJoinedName);
-                this.startActivity(intent);
-
-
+                }else{
+                    Intent intent = new Intent(this, RestaurantDetailsActivity.class);
+                    intent.putExtra("KEY_DETAIL", restaurantJoinedUid);
+                    intent.putExtra("KEY_DETAIL_NAME", restaurantJoinedName);
+                    this.startActivity(intent);
+                }
                 break;
             case R.id.nav_settings:
                 Intent intentSetting = new Intent(MainActivity.this, SettingsActivity.class);
@@ -144,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default:
                 break;
         }
-
         this.drawerLayout.closeDrawer(GravityCompat.START);
 
         return true;

@@ -292,6 +292,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
+                                user = mAuth.getCurrentUser();
                                 fetchWorkmate();
                             }
                         }).addOnFailureListener(new OnFailureListener() {

@@ -1,49 +1,43 @@
 package sakref.yohan.go4lunch.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlarmManager;
-import android.app.Notification;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.databinding.ActivityMainBinding;
-//import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
-import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
-import sakref.yohan.go4lunch.models.Workmates;
-import sakref.yohan.go4lunch.utils.NotificationReceiver;
-import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
 
-import androidx.core.app.NotificationCompat;
-
+import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
 import sakref.yohan.go4lunch.models.Workmates;
+import sakref.yohan.go4lunch.utils.NotificationReceiver;
+import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
 public class SettingsActivity extends AppCompatActivity {
-    private static final String CHANNEL_ID = "0";
     private static final String TAG = "SettingsActivity";
-    private static final int notificationId = 1;
+    private static final String NOTIFICATION = "notificationActive";
     private ActivitySettingBinding binding;
-    private WorkmatesViewModel workmateViewModel;
+    public WorkmatesViewModel workmateViewModel;
+
     private Workmates workmates;
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
     private FirebaseUser user;
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -56,27 +50,37 @@ public class SettingsActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         //initDB();
-
+        sharedPreferences = getSharedPreferences(NOTIFICATION, MODE_PRIVATE);
         initListener();
+
+
 
     }
 
 
 
     private void initListener(){
+        Boolean isNotificationOn = sharedPreferences.getBoolean(NOTIFICATION,false);
+        if(isNotificationOn){
+            binding.notificationSwitchButton.setChecked(true);
+        }else
+            binding.notificationSwitchButton.setChecked(false);
+
+
         binding.notificationSwitchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(NOTIFICATION, true);
+                editor.apply();
                     setBetterNotification();
-
                 }
                 else{
-                    // TODO: 12/10/2021 Decocher la case
-                    /*Toast.makeText(SettingsActivity.this, "Notification deactivated", Toast.LENGTH_SHORT).show();
-                    alarmManager.cancel(pendingIntent);
-                    Log.d(TAG, "onCheckedChanged: "+ alarmManager);*/
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(NOTIFICATION, false);
+                    editor.apply();
+                    clearBetterNotification();
                 }
             }
         });
@@ -87,89 +91,172 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-/*
-    private void initDB(){
-        workmateViewModel.getCurrentUserFromDB(user.getUid()).observe(this, workmate -> {
-            this.workmate = workmate;
-            if(workmate.getNotification())
-                binding.notificationSwitchButton.setChecked(true);
-        });
-    }
 
-    public void showWorkmatesEatingNotification(){
+        binding.buttonEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        workmateViewModel.getAllUserFromDB(true).observe(this, workmateList -> {
-            StringBuilder workmateEating = new StringBuilder("will eat here.");
-            for (int i = 0; i<workmateList.size();i++){
-                if(workmate.getCurrentRestaurant().equals(workmateList.get(i).getCurrentRestaurant()) && !workmate.getName().equals(workmateList.get(i).getName())){
-                    workmateEating.insert(0, workmateList.get(i).getName() + " ,");
+                String email = binding.buttonEmailText.getText().toString();
+                if (email.isEmpty()){
+                    Toast.makeText(SettingsActivity.this, "Please Verify Email", Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.d(TAG, "onClick: Click bouton email " + binding.buttonEmailText.getText().toString());
+                    WorkmatesHelper.updateWorkmatEmail(binding.buttonEmailText.getText().toString(), user.getUid());
+                    user.updateEmail(email);
+                    Toast.makeText(SettingsActivity.this, "Email updated.", Toast.LENGTH_SHORT).show();
                 }
             }
-            scheduleNotification(getNotification(workmateEating.toString()));
+        });
+
+        binding.buttonPseudo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String pseudo = binding.loginPseudoText.getText().toString();
+                if(pseudo.isEmpty()){
+                    Toast.makeText(SettingsActivity.this, "Please Verify PSEUDO", Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.d(TAG, "onClick: click button pseudo : " +  pseudo);
+                    WorkmatesHelper.updateWorkmateName(pseudo, user.getUid());
+                    Toast.makeText(SettingsActivity.this, "Name Changed.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        binding.buttonImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String image = binding.buttonImageText.getText().toString();
+                if(image.isEmpty()){
+                    Toast.makeText(SettingsActivity.this, "Please Verify URL.", Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.d(TAG, "onClick: click button pseudo : " +  image);
+                    WorkmatesHelper.updateWorkmatePicture(image, user.getUid());
+                    Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        binding.buttonPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String password = binding.buttonPasswordText.getText().toString();
+                if(password.isEmpty()){
+                    Toast.makeText(SettingsActivity.this, "Please Verify Password.", Toast.LENGTH_SHORT).show();
+                }else{
+                    user.updatePassword(password);
+                    Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        binding.buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create the object of
+                // AlertDialog Builder class
+                AlertDialog.Builder builder
+                        = new AlertDialog
+                        .Builder(SettingsActivity.this);
+
+                // Set the message show for the Alert time
+                builder.setMessage("Are you sure you want to delete your profile ?");
+
+                // Set Alert Title
+                builder.setTitle("Alert !");
+
+                // Set Cancelable false
+                // for when the user clicks on the outside
+                // the Dialog Box then it will remain show
+                builder.setCancelable(false);
+
+                // Set the positive button with yes name
+                // OnClickListener method is use of
+                // DialogInterface interface.
+
+                builder
+                        .setPositiveButton(
+                                "Yes",
+                                new DialogInterface
+                                        .OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+
+                                        // When the user click yes button
+                                        // then app will close
+                                        WorkmatesHelper.deleteWorkmate(user.getUid());
+                                        user.delete();
+                                        finishAffinity();
+                                    }
+                                });
+
+                // Set the Negative button with No name
+                // OnClickListener method is use
+                // of DialogInterface interface.
+                builder
+                        .setNegativeButton(
+                                "No",
+                                new DialogInterface
+                                        .OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+
+                                        // If user click no
+                                        // then dialog box is canceled.
+                                        dialog.cancel();
+                                    }
+                                });
+
+                // Create the Alert dialog
+                AlertDialog alertDialog = builder.create();
+
+                // Show the Alert Dialog box
+                alertDialog.show();
+            }
         });
     }
-*/
 
-
-/*
-    public void setNotification(){
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, ConnectionActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(SettingsActivity.this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.bowl_logo)
-                .setContentTitle("A table, pensez à choisir un restaurant!")
-                .setContentText("Avez-vous choisis un restaurant pour ce midi ?")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                // Set the intent that will fire when the user taps the notification
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-
-        //Intent intentAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
-
-
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SettingsActivity.this);
-        managerCompat.notify(notificationId, builder.build());
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
-        calendar.set(Calendar.MINUTE, 50);
-
-        //long futureInMillis = SystemClock.elapsedRealtime() + 5000;
-
-        //alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        //alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
-        alarmManager = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
-
-
-
-    }
-    */
 
     // TODO: 12/10/2021 Search for Settings UI  
 
     public void setBetterNotification(){
         Calendar calendar = Calendar.getInstance();
         Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 00);
-
+        calendar.set(Calendar.MINUTE, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+
+
+    }
+
+    public void clearBetterNotification(){
+        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if(alarmManager == null){
+            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        }
+
+        alarmManager.cancel(pendingIntent);
+        Toast.makeText(this, "Alarm Cancelled", Toast.LENGTH_SHORT).show();
+
 
     }
 
 
 }
+
+
+

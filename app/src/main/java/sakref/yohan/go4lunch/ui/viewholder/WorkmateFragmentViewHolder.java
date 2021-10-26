@@ -39,7 +39,6 @@ public class WorkmateFragmentViewHolder extends RecyclerView.ViewHolder{
 
     public void bind(Workmates result, boolean onRestaurantDetails){
         if (!onRestaurantDetails){
-            //Todo : Ajouter le nom du restaurant au workmates
             if (result.getRestaurantName()== ""){
                 mName.setText(result.getWorkmatesName() + " hasn't decided yet");
             }else{mName.setText(result.getWorkmatesName() + " is eating at " + result.getRestaurantName());}
