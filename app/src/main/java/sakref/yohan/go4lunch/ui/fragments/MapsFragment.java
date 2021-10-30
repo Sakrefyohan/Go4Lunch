@@ -281,7 +281,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         //((MainActivity) getActivity()).setActionBarTitle("I'm Hungry!");
     }
 
-    //TODO : onResume()
 
 
 }

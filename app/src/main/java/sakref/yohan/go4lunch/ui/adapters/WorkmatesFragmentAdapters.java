@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,10 +51,16 @@ public class WorkmatesFragmentAdapters extends RecyclerView.Adapter<WorkmateFrag
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), RestaurantDetailsActivity.class);
-                intent.putExtra("KEY_DETAIL", workmates.get(position).getRestaurantJoined());
-                intent.putExtra("KEY_DETAIL_NAME", workmates.get(position).getRestaurantName());
-                v.getContext().startActivity(intent);
+                if(workmates.get(position).getRestaurantName().equals("")){
+                    Toast.makeText(v.getContext(), "No restaurant selected", Toast.LENGTH_SHORT).show();
+                }else {
+                    Intent intent = new Intent(v.getContext(), RestaurantDetailsActivity.class);
+                    intent.putExtra("KEY_DETAIL", workmates.get(position).getRestaurantJoined());
+                    intent.putExtra("KEY_DETAIL_NAME", workmates.get(position).getRestaurantName());
+                    v.getContext().startActivity(intent);
+                }
+
+
 
 
             }

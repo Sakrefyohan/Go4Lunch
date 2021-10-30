@@ -66,6 +66,10 @@ public class ConnectionActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
+    private String workmatesName;
+    private Uri userPhotoUrl;
+    private String photo;
+    private String email;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,7 @@ public class ConnectionActivity extends AppCompatActivity {
         mAuth.useAppLanguage();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         createNotificationChannel();
+
     }
 
 
@@ -346,10 +351,8 @@ public class ConnectionActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    String workmatesName;
-                    Uri userPhotoUrl = user.getPhotoUrl();
-                    String photo;
-                    String email = user.getEmail();
+                    userPhotoUrl = user.getPhotoUrl();
+                    email = user.getEmail();
 
                     if (!task.getResult().exists()) {
                         Log.d(TAG, "onComplete: Workmate doesn't exist");
@@ -397,19 +400,17 @@ public class ConnectionActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: Workmates 2  / " + mainViewModel.getUserAvatar() + " / " + mainViewModel.getUserMail() + " / " + mainViewModel.getUserName());
 
 
-                            Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
-                            intentUser.putExtra("username", workmatesName);
-                            intentUser.putExtra("email", email);
-                            intentUser.putExtra("photoUrl", photo);
-                            intentUser.putExtra("uid", user.getUid());
-                            startActivity(intentUser);
-
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Please Verifiy your mail", Toast.LENGTH_SHORT).show();
                         }
-
                     }
+                    Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
+                    intentUser.putExtra("username", workmatesName);
+                    intentUser.putExtra("email", email);
+                    intentUser.putExtra("photoUrl", photo);
+                    intentUser.putExtra("uid", user.getUid());
+                    startActivity(intentUser);
                 }
             }
         });

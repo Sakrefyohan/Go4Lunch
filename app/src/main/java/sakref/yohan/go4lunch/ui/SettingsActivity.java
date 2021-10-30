@@ -1,5 +1,6 @@
 package sakref.yohan.go4lunch.ui;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -13,11 +14,15 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Calendar;
 
@@ -38,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private FirebaseUser user;
     SharedPreferences sharedPreferences;
+    Intent intentUser;
 
 
     @Override
@@ -45,7 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySettingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        intentUser = new Intent(getApplicationContext(), MainActivity.class);
         workmateViewModel = new ViewModelProvider(this).get(WorkmatesViewModel.class);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -85,12 +91,35 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+
+
         binding.backButtonSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String email = binding.buttonEmailText.getText().toString();
+                String pseudo = binding.loginPseudoText.getText().toString();
+                String image = binding.buttonImageText.getText().toString();
+                String password = binding.buttonPasswordText.getText().toString();
+                if (email.isEmpty()){
+                    if (pseudo.isEmpty()){
+                        if (image.isEmpty()){
+                            if (password.isEmpty()){
+                                Log.d(TAG, "onClick: Aucun champ remplis finish de l'application");
+                                finish();
+                            }
+                        }
+                    }
+                }
+                setResult(Activity.RESULT_OK, intentUser);
                 finish();
+
+
             }
+
         });
+
+
+
 
         binding.buttonEmail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +133,7 @@ public class SettingsActivity extends AppCompatActivity {
                     WorkmatesHelper.updateWorkmatEmail(binding.buttonEmailText.getText().toString(), user.getUid());
                     user.updateEmail(email);
                     Toast.makeText(SettingsActivity.this, "Email updated.", Toast.LENGTH_SHORT).show();
+                    reloadUser();
                 }
             }
         });
@@ -118,6 +148,7 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.d(TAG, "onClick: click button pseudo : " +  pseudo);
                     WorkmatesHelper.updateWorkmateName(pseudo, user.getUid());
                     Toast.makeText(SettingsActivity.this, "Name Changed.", Toast.LENGTH_SHORT).show();
+                    reloadUser();
                 }
             }
         });
@@ -132,6 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.d(TAG, "onClick: click button pseudo : " +  image);
                     WorkmatesHelper.updateWorkmatePicture(image, user.getUid());
                     Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
+                    reloadUser();
 
                 }
             }
@@ -146,7 +178,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }else{
                     user.updatePassword(password);
                     Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
-
+                    reloadUser();
                 }
             }
         });
@@ -223,9 +255,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-
-    // TODO: 12/10/2021 Search for Settings UI  
-
     public void setBetterNotification(){
         Calendar calendar = Calendar.getInstance();
         Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
@@ -253,6 +282,41 @@ public class SettingsActivity extends AppCompatActivity {
         Toast.makeText(this, "Alarm Cancelled", Toast.LENGTH_SHORT).show();
 
 
+    }
+
+    public void reloadUser(){
+        WorkmatesHelper.getWorkmate(user.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    intentUser.putExtra("username", task.getResult().getString("workmatesName"));
+                    intentUser.putExtra("email", task.getResult().getString("workmatesEmail"));
+                    intentUser.putExtra("photoUrl", task.getResult().getString("urlPicture"));
+                    intentUser.putExtra("uid", user.getUid());
+
+                }
+            }
+        });
+    }
+    @Override
+    public void onBackPressed(){
+
+        String email = binding.buttonEmailText.getText().toString();
+        String pseudo = binding.loginPseudoText.getText().toString();
+        String image = binding.buttonImageText.getText().toString();
+        String password = binding.buttonPasswordText.getText().toString();
+        if (email.isEmpty()){
+            if (pseudo.isEmpty()){
+                if (image.isEmpty()){
+                    if (password.isEmpty()){
+                        Log.d(TAG, "onClick: Aucun champ remplis finish de l'application");
+                        finish();
+                    }
+                }
+            }
+        }
+        setResult(Activity.RESULT_OK, intentUser);
+        finish();
     }
 
 

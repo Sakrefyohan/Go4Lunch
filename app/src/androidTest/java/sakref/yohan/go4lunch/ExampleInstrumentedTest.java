@@ -1,5 +1,8 @@
 package sakref.yohan.go4lunch;
 
+import static com.adevinta.android.barista.assertion.BaristaVisibilityAssertions.assertDisplayed;
+import static com.adevinta.android.barista.interaction.BaristaClickInteractions.clickOn;
+
 import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -9,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
+
+
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -23,6 +28,13 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("sakref.yohan.go4lunch", appContext.getPackageName());
     }
+
+    public void doUserConnectAutomatically(){
+        clickOn(R.id.map);
+        assertDisplayed("i'm Hungry!");
+    }
+
+
 
     //todo search for barista
 }

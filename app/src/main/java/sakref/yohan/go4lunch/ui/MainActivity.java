@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_settings:
                 Intent intentSetting = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intentSetting);
+                startActivityForResult(intentSetting, 23);
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -229,12 +229,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Arrays.asList(Place.Field.ID, Place.Field.NAME))
                 .setCountry("FR")
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                /*
-                //TODO : Add
-                .setLocationBias(RectangularBounds.newInstance(
-                        new LatLng(-33, 151),
-                        new LatLng(-34, 152)
-                ))*/
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
          
@@ -253,6 +247,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }else if (resultCode == RESULT_CANCELED){
                 Log.d(TAG, "onActivvityResult: CANCELED WRITTING SEARCH");
             }
+        }
+        if (requestCode == 23){
+            if (resultCode == RESULT_OK){
+                username = data.getStringExtra("username");
+                email = data.getStringExtra("email");
+                photoUrl = data.getStringExtra("photoUrl");
+                mUid = data.getStringExtra("uid");
+                updateDrawerText();
+            }
+
         }
     }
 
@@ -273,6 +277,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(navDrawerAvatar);
 
     }
+
+
 
     public void getUserConnected (){
         username = getIntent().getStringExtra("username");
