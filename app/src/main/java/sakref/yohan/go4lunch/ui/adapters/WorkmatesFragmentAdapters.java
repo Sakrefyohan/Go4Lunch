@@ -51,16 +51,14 @@ public class WorkmatesFragmentAdapters extends RecyclerView.Adapter<WorkmateFrag
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(workmates.get(position).getRestaurantName().equals("")){
+                if (workmates.get(position).getRestaurantName().equals("")) {
                     Toast.makeText(v.getContext(), "No restaurant selected", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     Intent intent = new Intent(v.getContext(), RestaurantDetailsActivity.class);
                     intent.putExtra("KEY_DETAIL", workmates.get(position).getRestaurantJoined());
                     intent.putExtra("KEY_DETAIL_NAME", workmates.get(position).getRestaurantName());
                     v.getContext().startActivity(intent);
                 }
-
-
 
 
             }

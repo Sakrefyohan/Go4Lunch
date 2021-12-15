@@ -1,46 +1,36 @@
 package sakref.yohan.go4lunch.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Calendar;
+import java.util.Objects;
 
+import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.ActivitySettingBinding;
-import sakref.yohan.go4lunch.models.Workmates;
 import sakref.yohan.go4lunch.utils.NotificationReceiver;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 
 public class SettingsActivity extends AppCompatActivity {
-    private static final String TAG = "SettingsActivity";
     private static final String NOTIFICATION = "notificationActive";
     private ActivitySettingBinding binding;
     public WorkmatesViewModel workmateViewModel;
-
-    private Workmates workmates;
     private AlarmManager alarmManager;
-    private PendingIntent pendingIntent;
     private FirebaseUser user;
     SharedPreferences sharedPreferences;
     Intent intentUser;
@@ -60,202 +50,152 @@ public class SettingsActivity extends AppCompatActivity {
         initListener();
 
 
-
     }
 
 
-
-    private void initListener(){
-        Boolean isNotificationOn = sharedPreferences.getBoolean(NOTIFICATION,false);
-        if(isNotificationOn){
-            binding.notificationSwitchButton.setChecked(true);
-        }else
-            binding.notificationSwitchButton.setChecked(false);
+    private void initListener() {
+        boolean isNotificationOn = sharedPreferences.getBoolean(NOTIFICATION, false);
+        binding.notificationSwitchButton.setChecked(isNotificationOn);
 
 
-        binding.notificationSwitchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+        binding.notificationSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            if (isChecked) {
                 editor.putBoolean(NOTIFICATION, true);
                 editor.apply();
-                    setBetterNotification();
-                }
-                else{
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean(NOTIFICATION, false);
-                    editor.apply();
-                    clearBetterNotification();
-                }
+                setBetterNotification();
+            } else {
+                editor.putBoolean(NOTIFICATION, false);
+                editor.apply();
+                clearBetterNotification();
             }
         });
 
 
-
-        binding.backButtonSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = binding.buttonEmailText.getText().toString();
-                String pseudo = binding.loginPseudoText.getText().toString();
-                String image = binding.buttonImageText.getText().toString();
-                String password = binding.buttonPasswordText.getText().toString();
-                if (email.isEmpty()){
-                    if (pseudo.isEmpty()){
-                        if (image.isEmpty()){
-                            if (password.isEmpty()){
-                                Log.d(TAG, "onClick: Aucun champ remplis finish de l'application");
-                                finish();
-                            }
+        binding.backButtonSettings.setOnClickListener(v -> {
+            String email = Objects.requireNonNull(binding.buttonEmailText.getText()).toString();
+            String pseudo = Objects.requireNonNull(binding.loginPseudoText.getText()).toString();
+            String image = Objects.requireNonNull(binding.buttonImageText.getText()).toString();
+            String password = Objects.requireNonNull(binding.buttonPasswordText.getText()).toString();
+            if (email.isEmpty()) {
+                if (pseudo.isEmpty()) {
+                    if (image.isEmpty()) {
+                        if (password.isEmpty()) {
+                            finish();
                         }
                     }
                 }
-                setResult(Activity.RESULT_OK, intentUser);
-                finish();
-
-
             }
+            setResult(Activity.RESULT_OK, intentUser);
+            finish();
+
 
         });
 
 
+        binding.buttonEmail.setOnClickListener(view -> {
 
-
-        binding.buttonEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                String email = binding.buttonEmailText.getText().toString();
-                if (email.isEmpty()){
-                    Toast.makeText(SettingsActivity.this, "Please Verify Email", Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.d(TAG, "onClick: Click bouton email " + binding.buttonEmailText.getText().toString());
-                    WorkmatesHelper.updateWorkmatEmail(binding.buttonEmailText.getText().toString(), user.getUid());
-                    user.updateEmail(email);
-                    Toast.makeText(SettingsActivity.this, "Email updated.", Toast.LENGTH_SHORT).show();
-                    reloadUser();
-                }
+            String email = Objects.requireNonNull(binding.buttonEmailText.getText()).toString();
+            if (email.isEmpty()) {
+                Toast.makeText(SettingsActivity.this, (R.string.please_verify_email), Toast.LENGTH_SHORT).show();
+            } else {
+                WorkmatesHelper.updateWorkmatEmail(binding.buttonEmailText.getText().toString(), user.getUid());
+                user.updateEmail(email);
+                Toast.makeText(SettingsActivity.this, (R.string.email_updated), Toast.LENGTH_SHORT).show();
+                reloadUser();
             }
         });
 
-        binding.buttonPseudo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String pseudo = binding.loginPseudoText.getText().toString();
-                if(pseudo.isEmpty()){
-                    Toast.makeText(SettingsActivity.this, "Please Verify PSEUDO", Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.d(TAG, "onClick: click button pseudo : " +  pseudo);
-                    WorkmatesHelper.updateWorkmateName(pseudo, user.getUid());
-                    Toast.makeText(SettingsActivity.this, "Name Changed.", Toast.LENGTH_SHORT).show();
-                    reloadUser();
-                }
+        binding.buttonPseudo.setOnClickListener(view -> {
+            String pseudo = Objects.requireNonNull(binding.loginPseudoText.getText()).toString();
+            if (pseudo.isEmpty()) {
+                Toast.makeText(SettingsActivity.this, (R.string.please_verify_pseudo), Toast.LENGTH_SHORT).show();
+            } else {
+                WorkmatesHelper.updateWorkmateName(pseudo, user.getUid());
+                Toast.makeText(SettingsActivity.this, (R.string.name_changed), Toast.LENGTH_SHORT).show();
+                reloadUser();
             }
         });
 
-        binding.buttonImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String image = binding.buttonImageText.getText().toString();
-                if(image.isEmpty()){
-                    Toast.makeText(SettingsActivity.this, "Please Verify URL.", Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.d(TAG, "onClick: click button pseudo : " +  image);
-                    WorkmatesHelper.updateWorkmatePicture(image, user.getUid());
-                    Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
-                    reloadUser();
+        binding.buttonImage.setOnClickListener(view -> {
+            String image = Objects.requireNonNull(binding.buttonImageText.getText()).toString();
+            if (image.isEmpty()) {
+                Toast.makeText(SettingsActivity.this, (R.string.please_verify_url), Toast.LENGTH_SHORT).show();
+            } else {
+                WorkmatesHelper.updateWorkmatePicture(image, user.getUid());
+                Toast.makeText(SettingsActivity.this, (R.string.new_picture_added), Toast.LENGTH_SHORT).show();
+                reloadUser();
 
-                }
             }
         });
 
-        binding.buttonPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String password = binding.buttonPasswordText.getText().toString();
-                if(password.isEmpty()){
-                    Toast.makeText(SettingsActivity.this, "Please Verify Password.", Toast.LENGTH_SHORT).show();
-                }else{
-                    user.updatePassword(password);
-                    Toast.makeText(SettingsActivity.this, "New picture Added.", Toast.LENGTH_SHORT).show();
-                    reloadUser();
-                }
+        binding.buttonPassword.setOnClickListener(view -> {
+            String password = Objects.requireNonNull(binding.buttonPasswordText.getText()).toString();
+            if (password.isEmpty()) {
+                Toast.makeText(SettingsActivity.this, (R.string.please_verify_password), Toast.LENGTH_SHORT).show();
+            } else {
+                user.updatePassword(password);
+                Toast.makeText(SettingsActivity.this, (R.string.new_picture_added), Toast.LENGTH_SHORT).show();
+                reloadUser();
             }
         });
 
-        binding.buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create the object of
-                // AlertDialog Builder class
-                AlertDialog.Builder builder
-                        = new AlertDialog
-                        .Builder(SettingsActivity.this);
+        binding.buttonDelete.setOnClickListener(view -> {
+            // Create the object of
+            // AlertDialog Builder class
+            AlertDialog.Builder builder
+                    = new AlertDialog
+                    .Builder(SettingsActivity.this);
 
-                // Set the message show for the Alert time
-                builder.setMessage("Are you sure you want to delete your profile ?");
+            // Set the message show for the Alert time
+            builder.setMessage(R.string.are_you_sure_you_want_to_delete_your_profile);
 
-                // Set Alert Title
-                builder.setTitle("Alert !");
+            // Set Alert Title
+            builder.setTitle(R.string.alert);
 
-                // Set Cancelable false
-                // for when the user clicks on the outside
-                // the Dialog Box then it will remain show
-                builder.setCancelable(false);
+            // Set Cancelable false
+            // for when the user clicks on the outside
+            // the Dialog Box then it will remain show
+            builder.setCancelable(false);
 
-                // Set the positive button with yes name
-                // OnClickListener method is use of
-                // DialogInterface interface.
+            // Set the positive button with yes name
+            // OnClickListener method is use of
+            // DialogInterface interface.
 
-                builder
-                        .setPositiveButton(
-                                "Yes",
-                                new DialogInterface
-                                        .OnClickListener() {
+            builder
+                    .setPositiveButton(
+                            R.string.yes,
+                            (dialog, which) -> {
 
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which)
-                                    {
+                                // When the user click yes button
+                                // then app will close
+                                WorkmatesHelper.deleteWorkmate(user.getUid());
+                                user.delete();
+                                finishAffinity();
+                            });
 
-                                        // When the user click yes button
-                                        // then app will close
-                                        WorkmatesHelper.deleteWorkmate(user.getUid());
-                                        user.delete();
-                                        finishAffinity();
-                                    }
-                                });
+            // Set the Negative button with No name
+            // OnClickListener method is use
+            // of DialogInterface interface.
+            builder
+                    .setNegativeButton(
+                            R.string.no,
+                            (dialog, which) -> {
 
-                // Set the Negative button with No name
-                // OnClickListener method is use
-                // of DialogInterface interface.
-                builder
-                        .setNegativeButton(
-                                "No",
-                                new DialogInterface
-                                        .OnClickListener() {
+                                // If user click no
+                                // then dialog box is canceled.
+                                dialog.cancel();
+                            });
 
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which)
-                                    {
+            // Create the Alert dialog
+            AlertDialog alertDialog = builder.create();
 
-                                        // If user click no
-                                        // then dialog box is canceled.
-                                        dialog.cancel();
-                                    }
-                                });
-
-                // Create the Alert dialog
-                AlertDialog alertDialog = builder.create();
-
-                // Show the Alert Dialog box
-                alertDialog.show();
-            }
+            // Show the Alert Dialog box
+            alertDialog.show();
         });
     }
 
-    public void setBetterNotification(){
+    public void setBetterNotification() {
         Calendar calendar = Calendar.getInstance();
         Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -263,53 +203,50 @@ public class SettingsActivity extends AppCompatActivity {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 152, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
     }
 
-    public void clearBetterNotification(){
+    public void clearBetterNotification() {
         Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),152,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 152, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if(alarmManager == null){
+        if (alarmManager == null) {
             alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         }
 
         alarmManager.cancel(pendingIntent);
-        Toast.makeText(this, "Alarm Cancelled", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, (R.string.alarm_cancelled), Toast.LENGTH_SHORT).show();
 
 
     }
 
-    public void reloadUser(){
-        WorkmatesHelper.getWorkmate(user.getUid()).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    intentUser.putExtra("username", task.getResult().getString("workmatesName"));
-                    intentUser.putExtra("email", task.getResult().getString("workmatesEmail"));
-                    intentUser.putExtra("photoUrl", task.getResult().getString("urlPicture"));
-                    intentUser.putExtra("uid", user.getUid());
+    public void reloadUser() {
+        WorkmatesHelper.getWorkmate(user.getUid()).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                intentUser.putExtra("username", task.getResult().getString("workmatesName"));
+                intentUser.putExtra("email", task.getResult().getString("workmatesEmail"));
+                intentUser.putExtra("photoUrl", task.getResult().getString("urlPicture"));
+                intentUser.putExtra("uid", user.getUid());
 
-                }
             }
         });
     }
-    @Override
-    public void onBackPressed(){
 
-        String email = binding.buttonEmailText.getText().toString();
-        String pseudo = binding.loginPseudoText.getText().toString();
-        String image = binding.buttonImageText.getText().toString();
-        String password = binding.buttonPasswordText.getText().toString();
-        if (email.isEmpty()){
-            if (pseudo.isEmpty()){
-                if (image.isEmpty()){
-                    if (password.isEmpty()){
-                        Log.d(TAG, "onClick: Aucun champ remplis finish de l'application");
+    @Override
+    public void onBackPressed() {
+
+        String email = Objects.requireNonNull(binding.buttonEmailText.getText()).toString();
+        String pseudo = Objects.requireNonNull(binding.loginPseudoText.getText()).toString();
+        String image = Objects.requireNonNull(binding.buttonImageText.getText()).toString();
+        String password = Objects.requireNonNull(binding.buttonPasswordText.getText()).toString();
+        if (email.isEmpty()) {
+            if (pseudo.isEmpty()) {
+                if (image.isEmpty()) {
+                    if (password.isEmpty()) {
                         finish();
                     }
                 }

@@ -1,24 +1,16 @@
 package sakref.yohan.go4lunch.ui.viewholder;
 
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
 import sakref.yohan.go4lunch.R;
-import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
 import sakref.yohan.go4lunch.databinding.FragmentWorkmatesItemBinding;
 import sakref.yohan.go4lunch.models.Workmates;
-import sakref.yohan.go4lunch.models.newapiplaces.PlacesDetails;
-import sakref.yohan.go4lunch.models.newapiplaces.Result;
-import sakref.yohan.go4lunch.ui.RestaurantDetailsActivity;
-import sakref.yohan.go4lunch.viewmodels.MainViewModel;
+import sakref.yohan.go4lunch.utils.RestaurantUtils;
 
 public class WorkmateFragmentViewHolder extends RecyclerView.ViewHolder{
 
@@ -38,13 +30,8 @@ public class WorkmateFragmentViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(Workmates result, boolean onRestaurantDetails){
-        if (!onRestaurantDetails){
-            if (result.getRestaurantName()== ""){
-                mName.setText(result.getWorkmatesName() + " hasn't decided yet");
-            }else{mName.setText(result.getWorkmatesName() + " is eating at " + result.getRestaurantName());}
 
-
-        }else{mName.setText(result.getWorkmatesName() + " is joining");}
+       mName.setText(RestaurantUtils.getWorkmatesRestaurant(result.getRestaurantName(), result.getWorkmatesName(), onRestaurantDetails));
 
 
         if(result.getUrlPicture() != null) {
@@ -58,16 +45,6 @@ public class WorkmateFragmentViewHolder extends RecyclerView.ViewHolder{
             mPhoto.setImageResource(R.drawable.ic_no_image);
         }
 
-
-
-
-
     }
-
-
-
-
-
-
 
 }

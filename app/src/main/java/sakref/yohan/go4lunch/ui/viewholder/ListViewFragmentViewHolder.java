@@ -1,6 +1,5 @@
 package sakref.yohan.go4lunch.ui.viewholder;
 
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,21 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.databinding.FragmentViewItemBinding;
 import sakref.yohan.go4lunch.models.OpeningHours;
 import sakref.yohan.go4lunch.models.Result;
-import sakref.yohan.go4lunch.models.Workmates;
-import sakref.yohan.go4lunch.ui.fragments.MapsFragment;
+import sakref.yohan.go4lunch.utils.RestaurantUtils;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 
 public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
@@ -68,37 +62,22 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
         OpeningHours nIsOpen = result.getOpeningHours();
         if (nIsOpen != null) {
             if (result.getOpeningHours().getOpenNow() == true) {
-                mIsOpen.setText("Ouvert");
+                mIsOpen.setText(R.string.open);
             } else {
-                mIsOpen.setText("Fermé");
+                mIsOpen.setText(R.string.close);
             }
         } else {
-            mIsOpen.setText("Aucune information disponible");
+            mIsOpen.setText(R.string.no_information_available);
         }
 
 
-        if (result.getRating() != null) {
-            if (result.getRating() == 5 && result.getRating() > 4.4) {
-                mRating.setText(result.getRating().toString() + " 🌟🌟🌟");
-            } else if (result.getRating() <= 4.3 && result.getRating() > 4.1) {
-                mRating.setText(result.getRating().toString() + " ⭐⭐⭐");
-            } else if (result.getRating() <= 4 && result.getRating() > 3.1) {
-                mRating.setText(result.getRating().toString() + " ⭐⭐");
-            } else if (result.getRating() <= 3 && result.getRating() > 2.1) {
-                mRating.setText(result.getRating().toString() + " ⭐");
-            } else if (result.getRating() <= 2) {
-                mRating.setText("☀");
-            }
-
-        } else {
-            mRating.setText("Pas de note");
-        }
+        mRating.setText(RestaurantUtils.getRatingRestaurant(result.getRating()));
 
         if (result.getPhotos() != null) {
             int mRefSize = result.getPhotos().size();
             String mRef = result.getPhotos().get(mRefSize - 1).getPhotoReference();
             API = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=" + mRef + "&key=AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
-            //
+
         } else {
             mPhoto.setImageResource(R.drawable.ic_no_image);
         }
@@ -114,9 +93,7 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
         latRestau= result.getGeometry().getLocation().getLat();
         longRestau = result.getGeometry().getLocation().getLng();
 
-        int distance = distance(latRestau, longRestau, lat2, lon2);
-
-        mDistance.setText(distance + "m");
+        mDistance.setText(RestaurantUtils.getRestaurantDistance(latRestau, longRestau, lat2, lon2) + "m");
 
 
         WorkmatesHelper.getAllJoiningWorkmate(result.getPlaceId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -133,30 +110,6 @@ public class ListViewFragmentViewHolder extends RecyclerView.ViewHolder {
 
 
 
-    }
-
-    private int distance(double latRestau, double longRestau, double lat2, double lon2) {
-        double theta = longRestau - lon2;
-        double dist = Math.sin(deg2rad(latRestau)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(latRestau)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344;
-        dist = dist * 1000;
-
-        return (int) dist;
-    }
-
-    //This function converts decimal degrees to radians
-
-    private double deg2rad ( double deg){
-        return (deg * Math.PI / 180.0);
-    }
-
-    //This function converts radians to decimal degrees
-
-    private double rad2deg ( double rad){
-        return (rad * 180.0 / Math.PI);
     }
 
 }

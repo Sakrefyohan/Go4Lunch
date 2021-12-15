@@ -17,8 +17,8 @@ public class PlacesDetailsRepository {
 
     private static PlacesDetailsRepository mPlacesService;
 
-    public static  PlacesDetailsRepository getInstance(){
-        if (mPlacesService == null){
+    public static PlacesDetailsRepository getInstance() {
+        if (mPlacesService == null) {
             mPlacesService = new PlacesDetailsRepository();
         }
         return mPlacesService;
@@ -26,7 +26,7 @@ public class PlacesDetailsRepository {
 
     private DetailsPlacesApi detailsPlacesApi;
 
-    public PlacesDetailsRepository(){
+    public PlacesDetailsRepository() {
         detailsPlacesApi = RetrofitService.createService(DetailsPlacesApi.class);
     }
 

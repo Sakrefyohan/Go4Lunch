@@ -50,6 +50,7 @@ import androidx.navigation.ui.NavigationUI;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import sakref.yohan.go4lunch.R;
 import sakref.yohan.go4lunch.utils.WorkmatesHelper;
@@ -62,11 +63,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final int AUTOCOMPLETE_REQUEST_CODE = 123;
 
-    private MainViewModel mainViewModel;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private final String TAG = "Main Activity";
     TextView navDrawerWorkmates;
     ImageView navDrawerAvatar;
     TextView navDrawerMail;
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        navigationView = (NavigationView) findViewById(R.id.nav_view_drawer);
+        navigationView = findViewById(R.id.nav_view_drawer);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        MainViewModel mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         this.getUserConnected();
         this.configureToolBar();
@@ -102,13 +101,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.initializePlacesAutocomplete();
         this.updateDrawerText();
         SharedPreferences sharedPreferences = getSharedPreferences("notificationActive", MODE_PRIVATE);
-        Log.d(TAG, "onCreate: SharedPreferences = " + sharedPreferences.getBoolean("notificationActive",false));
-
-
 
 
     }
-
 
 
     @Override
@@ -133,13 +128,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 4 - Handle Navigation Item Click
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.nav_yourlunch:
-                mUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                if (restaurantJoinedUid.equals("")){
-                    Toast.makeText(this, "You have not selected a restaurant yet.", Toast.LENGTH_SHORT).show();
+                mUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                if (restaurantJoinedUid.equals("")) {
+                    Toast.makeText(this, (R.string.you_have_not_selected_a_restaurant_yet), Toast.LENGTH_SHORT).show();
 
-                }else{
+                } else {
                     Intent intent = new Intent(this, RestaurantDetailsActivity.class);
                     intent.putExtra("KEY_DETAIL", restaurantJoinedUid);
                     intent.putExtra("KEY_DETAIL_NAME", restaurantJoinedName);
@@ -165,13 +160,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // 1 - Configure Toolbar
-    private void configureToolBar(){
+    private void configureToolBar() {
         this.toolbar = findViewById(R.id.toolbar_drawer);
         setSupportActionBar(toolbar);
     }
 
     // 2 - Configure Drawer Layout
-    private void configureDrawerLayout(){
+    private void configureDrawerLayout() {
         this.drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -179,18 +174,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // 3 - Configure NavigationView
-    private void configureNavigationView(){
+    private void configureNavigationView() {
         this.navigationView = findViewById(R.id.nav_view_drawer);
 
         navigationView.setNavigationItemSelectedListener(this);
         navDrawerWorkmates = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_workmates);
         navDrawerAvatar = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_avatar);
         navDrawerMail = navigationView.getHeaderView(0).findViewById(R.id.nav_drawer_mail);
-        Log.d(TAG, "configureNavigationView: " + navDrawerWorkmates + " / "  + navDrawerAvatar  + " / " + navDrawerMail);
+        String TAG = "Main Activity";
+        Log.d(TAG, "configureNavigationView: " + navDrawerWorkmates + " / " + navDrawerAvatar + " / " + navDrawerMail);
     }
 
-    private void initializePlacesAutocomplete(){
-        String apiKey = getString(R.string.api_key);
+    private void initializePlacesAutocomplete() {
+        String apiKey = "AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s";
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), apiKey);
@@ -215,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.button_search) {
-            Log.d(TAG, "onOptionsItemSelected: searchView Man");
             return true;
         }
 
@@ -223,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void startAutocompleteActivity(MenuItem item) {
-        Log.d(TAG, "startAutocompleteActivity: test click" + item.getTitle());
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY,
                 Arrays.asList(Place.Field.ID, Place.Field.NAME))
@@ -231,25 +225,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-         
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.d(TAG, "onActivityResult: Restaurant : " + place.getId() + " " + place.getName());
 
-            }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(data);
-            }else if (resultCode == RESULT_CANCELED){
-                Log.d(TAG, "onActivvityResult: CANCELED WRITTING SEARCH");
+            } else if (resultCode == RESULT_CANCELED) {
             }
         }
-        if (requestCode == 23){
-            if (resultCode == RESULT_OK){
+        if (requestCode == 23) {
+            if (resultCode == RESULT_OK) {
                 username = data.getStringExtra("username");
                 email = data.getStringExtra("email");
                 photoUrl = data.getStringExtra("photoUrl");
@@ -260,11 +252,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void setActionBarTitle(String title){
+    public void setActionBarTitle(String title) {
         toolbar.setTitle(title);
     }
 
-    public void updateDrawerText(){
+    public void updateDrawerText() {
 
 
         navDrawerWorkmates.setText(username);
@@ -279,14 +271,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-    public void getUserConnected (){
+    public void getUserConnected() {
         username = getIntent().getStringExtra("username");
         email = getIntent().getStringExtra("email");
         photoUrl = getIntent().getStringExtra("photoUrl");
         mUid = getIntent().getStringExtra("uid");
-        Log.d(TAG, "getUserConnected: " + username + " / "  + email + " / "  + photoUrl + " / "  + mUid);
-
         WorkmatesHelper.getWorkmate(mUid)
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override

@@ -20,9 +20,7 @@ import sakref.yohan.go4lunch.models.Result;
 import sakref.yohan.go4lunch.ui.RestaurantDetailsActivity;
 import sakref.yohan.go4lunch.ui.viewholder.ListViewFragmentViewHolder;
 
-public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragmentViewHolder>{
-
-
+public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragmentViewHolder> {
 
     private List<Result> restaurants;
     private double lat;
@@ -40,7 +38,7 @@ public class ListViewFragmentAdapters extends RecyclerView.Adapter<ListViewFragm
     @Override
     public ListViewFragmentViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         // CREATE VIEW HOLDER AND INFLATING ITS XML LAYOUT
-        FragmentViewItemBinding binding = FragmentViewItemBinding.inflate(LayoutInflater.from(parent.getContext()) ,parent, false);
+        FragmentViewItemBinding binding = FragmentViewItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ListViewFragmentViewHolder(binding, lat, lng);
     }
 

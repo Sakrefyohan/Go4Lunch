@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "sakref.yohan.go4lunch"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -33,9 +33,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
@@ -43,29 +43,25 @@ dependencies {
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.test:monitor:1.3.0'
+    implementation 'androidx.test:monitor:1.4.0'
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
 
     //Firebase SDK for Google Analytics
-    implementation platform('com.google.firebase:firebase-bom:26.4.0')
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
-    implementation 'com.firebaseui:firebase-ui-auth:7.1.0'
-    implementation 'com.firebaseui:firebase-ui-firestore:6.3.0'
-
-    // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:26.1.0')
-
-    // Declare the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation platform('com.google.firebase:firebase-bom:29.0.1')
+    implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
+    implementation 'com.firebaseui:firebase-ui-firestore:8.0.0'
+    implementation 'com.google.firebase:firebase-firestore:20.0.0'
 
     //Facebook SDK
     implementation 'com.facebook.android:facebook-android-sdk:7.1.0'
 
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
 
     //MaterialDesign
@@ -81,7 +77,8 @@ dependencies {
     implementation 'androidx.databinding:databinding-runtime:7.0.3'
 
     //Google Place APIs : https://developers.google.com/maps/documentation/android-sdk/v3-client-migration
-    implementation 'com.google.android.libraries.places:places:2.4.0'
+    //Autocomplete
+    implementation 'com.google.android.libraries.places:places:2.5.0'
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.maps.android:android-maps-utils-v3:1.3.1'
 
@@ -97,18 +94,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:28.0.1')
-
-    // Declare the dependency for the Cloud Firestore library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation 'com.google.firebase:firebase-firestore'
-
-    //Autocomplete
-    implementation 'com.google.android.libraries.places:places:2.4.0'
-
     //Notification
-    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.core:core:1.7.0'
 
     //Test
     androidTestImplementation('com.adevinta.android:barista:4.2.0') {

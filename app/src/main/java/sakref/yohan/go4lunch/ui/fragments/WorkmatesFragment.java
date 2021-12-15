@@ -37,8 +37,8 @@ public class WorkmatesFragment extends Fragment {
         binding = FragmentWorkmatesBinding.inflate(getLayoutInflater());
 
         View view = binding.getRoot();
-        ((MainActivity) getActivity()).setActionBarTitle("Available workmates");
-        workmatesViewModel= new ViewModelProvider(getActivity()).get(WorkmatesViewModel.class);
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.available_workmates));
+        workmatesViewModel = new ViewModelProvider(getActivity()).get(WorkmatesViewModel.class);
         workmatesViewModel.fetchWorkmates();
 
         workmatesViewModel.getWorkmates().observe(getViewLifecycleOwner(), (workmates) -> {

@@ -144,7 +144,7 @@ public class ConnectionActivity extends AppCompatActivity {
     }
 
     public void signInTwitter() {
-        Toast.makeText(this, "Connection à twitter", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, (R.string.connexion_twitter), Toast.LENGTH_SHORT).show();
         OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
         Task<AuthResult> pendingResultTask = mAuth.getPendingAuthResult();
         if (pendingResultTask != null) {
@@ -197,7 +197,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
         if (email.isEmpty() || password.isEmpty()) {
 
-            Toast.makeText(this, "Please Fill email or password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, (R.string.please_fill_email_or_password), Toast.LENGTH_SHORT).show();
         } else {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -244,7 +244,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(ConnectionActivity.this, "Authentication failed.",
+                            Toast.makeText(ConnectionActivity.this, (R.string.authentication_failed),
                                     Toast.LENGTH_SHORT).show();
 
                         }
@@ -355,24 +355,19 @@ public class ConnectionActivity extends AppCompatActivity {
                     email = user.getEmail();
 
                     if (!task.getResult().exists()) {
-                        Log.d(TAG, "onComplete: Workmate doesn't exist");
                         user.sendEmailVerification();
 
 
                         if (userPhotoUrl == null) {
-                            Log.d(TAG, "onComplete: Workmate Have no picture adding one ... ");
                             photo = getString(R.string.missing_Avatar);
                         } else {
                             photo = user.getPhotoUrl().toString();
-                            Log.d(TAG, "onComplete: Workmate Have a picture  :  " + photo);
                         }
 
-                        if (user.getDisplayName() == null || user.getDisplayName() == "") {
+                        if (user.getDisplayName() == null || user.getDisplayName().equals("")) {
                             workmatesName = "Ano Nyme";
-                            Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
                         } else {
                             workmatesName = user.getDisplayName();
-                            Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
                         }
 
 
@@ -380,29 +375,23 @@ public class ConnectionActivity extends AppCompatActivity {
 
 
                     } else {
-                        Log.d(TAG, "onComplete: Workmate Already Exist ... Cheking info : ");
 
                         if (user.isEmailVerified()) {
 
 
                             String username = task.getResult().getString("workmatesName");
-                            if (username == null || username == "") {
+                            if (username == null || username.equals("")) {
                                 workmatesName = "Ano Nyme";
-                                Log.d(TAG, "onComplete: Workmate Have no name, creating one ... ");
                             } else {
                                 workmatesName = username;
-                                Log.d(TAG, "onComplete: Workmate Have a name :  " + workmatesName);
                             }
                             String restaurantJoined = task.getResult().getString("restaurantJoined");
                             String restaurantName = task.getResult().getString("restaurantName");
                             photo = task.getResult().getString("urlPicture");
 
-                            Log.d(TAG, "onComplete: Workmates 2  / " + mainViewModel.getUserAvatar() + " / " + mainViewModel.getUserMail() + " / " + mainViewModel.getUserName());
-
 
                         } else {
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Please Verifiy your mail", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), (R.string.please_verify_email), Toast.LENGTH_SHORT).show();
                         }
                     }
                     Intent intentUser = new Intent(getApplicationContext(), MainActivity.class);
@@ -417,36 +406,36 @@ public class ConnectionActivity extends AppCompatActivity {
         WorkmatesHelper.getWorkmate(user.getUid()).addOnFailureListener(this.onFailureListener());
     }
 
-        private void createNotificationChannel () {
-            // Create the NotificationChannel, but only on API 26+ because
-            // the NotificationChannel class is new and not in the support library
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence name = "Rappel de choix";
-                String description = "Rappel de choix de restaurant";
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-                channel.setDescription(description);
-                // Register the channel with the system; you can't change the importance
-                // or other notification behaviors after this
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        // --------------------
-        // ERROR HANDLER
-        // --------------------
-
-        protected OnFailureListener onFailureListener () {
-            return new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "fetchWorkmate : onFailure: " + e);
-                    Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
-                }
-            };
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.restaurant_choice);
+            String description = getString(R.string.reminder_to_choose_a_restaurant);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
+
+    // --------------------
+    // ERROR HANDLER
+    // --------------------
+
+    protected OnFailureListener onFailureListener() {
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "fetchWorkmate : onFailure: " + e);
+                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
+    }
+}
 
 
 

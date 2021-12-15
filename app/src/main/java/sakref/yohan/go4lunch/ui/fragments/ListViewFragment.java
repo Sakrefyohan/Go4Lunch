@@ -47,18 +47,18 @@ public class ListViewFragment extends Fragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         FragmentViewBinding binding = FragmentViewBinding.inflate(getLayoutInflater());
-       View view = binding.getRoot();
+        View view = binding.getRoot();
         ((MainActivity) getActivity()).setActionBarTitle("I'm Hungry!");
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         Log.d(TAG, "onCreateView: init mainViewModel : " + mainViewModel);
 
-       mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
-        Log.d(TAG, "onCreateView: Places Ready");
+        mainViewModel.getPlaces().observe(getViewLifecycleOwner(), (places) -> {
+            Log.d(TAG, "onCreateView: Places Ready");
 
-           ListViewFragmentAdapters adapters = new ListViewFragmentAdapters(places.getResults(), mainViewModel.getLat2(), mainViewModel.getLon2());
-           binding.fragmentViewRecycler.setAdapter(adapters);
-           binding.fragmentViewRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+            ListViewFragmentAdapters adapters = new ListViewFragmentAdapters(places.getResults(), mainViewModel.getLat2(), mainViewModel.getLon2());
+            binding.fragmentViewRecycler.setAdapter(adapters);
+            binding.fragmentViewRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         });
 

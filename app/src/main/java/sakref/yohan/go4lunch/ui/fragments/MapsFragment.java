@@ -83,7 +83,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     }
 
 
-
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
 
@@ -98,18 +97,17 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
          */
 
 
-
         @Override
         public void onMapReady(GoogleMap googleMap) {
             if (ActivityCompat.checkSelfPermission(getActivity()
                     , ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    && ActivityCompat.checkSelfPermission(getActivity(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 map = googleMap;
                 map.getUiSettings().setMyLocationButtonEnabled(true);
                 map.setMyLocationEnabled(true);
-                Log.d(TAG, "onMapReady: isMyLocationEnabled ? " + map.isMyLocationEnabled() );
+                Log.d(TAG, "onMapReady: isMyLocationEnabled ? " + map.isMyLocationEnabled());
                 getCurrentLocation();
-                ((MainActivity) getActivity()).setActionBarTitle("I'm Hungry!");
+                ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.i_m_hungry));
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 44);
             }
@@ -121,14 +119,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == 100 && grantResults.length > 0 && (grantResults[0] + grantResults[1] 
-        == PackageManager.PERMISSION_GRANTED)){
+        if (requestCode == 100 && grantResults.length > 0 && (grantResults[0] + grantResults[1]
+                == PackageManager.PERMISSION_GRANTED)) {
             map.setMyLocationEnabled(true);
             map.getUiSettings().setAllGesturesEnabled(true);
             getCurrentLocation();
 
-        }else {
-            Toast.makeText(getActivity(), "Permission denied.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), (R.string.permission_denied), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -136,10 +134,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     public void getCurrentLocation() {
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(
-               Context.LOCATION_SERVICE
+                Context.LOCATION_SERVICE
         );
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
             fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
@@ -163,47 +161,46 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                                 public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
                                         List<Workmates> listWorkmates = new ArrayList<Workmates>();
-                                        for (QueryDocumentSnapshot document:task.getResult())
-                                        {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
                                             listWorkmates.add(document.toObject(Workmates.class));
                                         }
 
-                                            BitmapDescriptor pinColor;
-                                            for (int j = 0; j < pSize; j++) {
+                                        BitmapDescriptor pinColor;
+                                        for (int j = 0; j < pSize; j++) {
 
-                                                String placeId = places.getResults().get(j).getPlaceId();
-                                                boolean coWorkerJoining = isJoining(placeId, listWorkmates);
-                                                //Check if CoWorkers go to a restaurant
-                                                if (coWorkerJoining){
-                                                    pinColor = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_restaurant_green);
-                                                }else{
-                                                    pinColor = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_restaurant_orange);
-                                                }
-
-
-                                                pName = places.getResults().get(j).getName();
-                                                pUid = places.getResults().get(j).getPlaceId();
-                                                pAddress = places.getResults().get(j).getVicinity();
-
-                                                pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
-                                                pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
-                                                mPlaces = new LatLng(pLat, pLng);
-                                                workmatesViewModel.setPlaceName(pName);
-                                                marker = map.addMarker(new MarkerOptions().position(mPlaces).title(pAddress).flat(false).snippet(String.valueOf(places.getResults().get(j).getPlaceId())).icon(pinColor));
-
+                                            String placeId = places.getResults().get(j).getPlaceId();
+                                            boolean coWorkerJoining = isJoining(placeId, listWorkmates);
+                                            //Check if CoWorkers go to a restaurant
+                                            if (coWorkerJoining) {
+                                                pinColor = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_restaurant_green);
+                                            } else {
+                                                pinColor = BitmapDescriptorFactory.fromResource(R.drawable.ic_pin_restaurant_orange);
                                             }
+
+
+                                            pName = places.getResults().get(j).getName();
+                                            pUid = places.getResults().get(j).getPlaceId();
+                                            pAddress = places.getResults().get(j).getVicinity();
+
+                                            pLat = places.getResults().get(j).getGeometry().getLocation().getLat();
+                                            pLng = places.getResults().get(j).getGeometry().getLocation().getLng();
+                                            mPlaces = new LatLng(pLat, pLng);
+                                            workmatesViewModel.setPlaceName(pName);
+                                            marker = map.addMarker(new MarkerOptions().position(mPlaces).title(pAddress).flat(false).snippet(String.valueOf(places.getResults().get(j).getPlaceId())).icon(pinColor));
+
                                         }
                                     }
+                                }
 
                             });
                         });
-                    }else {
+                    } else {
                         LocationRequest locationRequest = new LocationRequest()
                                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                                 .setInterval(10000)
                                 .setFastestInterval(1000)
                                 .setNumUpdates(1);
-                        LocationCallback locationCallback = new LocationCallback(){
+                        LocationCallback locationCallback = new LocationCallback() {
                             @Override
                             public void onLocationResult(LocationResult locationResult) {
                                 Location location1 = locationResult.getLastLocation();
@@ -211,9 +208,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                                 String vLongitude = String.valueOf(location1.getLongitude());
                                 Intent intent = new Intent(getActivity(), MainViewModel.class);
                                 intent.putExtra("vLatitude", vLatitude);
-                                intent.putExtra("vLongitude",vLongitude);
-                                Log.d(TAG, "onLocationResult: Latitude : " + vLatitude);
-                                Log.d(TAG, "onLocationResult: Longitude : " + vLongitude);
+                                intent.putExtra("vLongitude", vLongitude);
 
                             }
                         };
@@ -224,29 +219,33 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 }
             });
 
-        }else {startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else {
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 
     }
-    public boolean isJoining(String placeId, List<Workmates> workmatesId){
+
+    public boolean isJoining(String placeId, List<Workmates> workmatesId) {
 
         int fSize = workmatesId.size();
         boolean idMatch = false;
-        for(int i = 0; i < fSize; i++ ) {
+        for (int i = 0; i < fSize; i++) {
             if (placeId.equals(workmatesId.get(i).getRestaurantJoined())) {
                 idMatch = true;
+                break;
             }
         }
-    return idMatch;}
+        return idMatch;
+    }
 
     @Override
     public boolean onMarkerClick(@NonNull @NotNull Marker marker) {
 
         Intent intent = new Intent(getContext(), RestaurantDetailsActivity.class);
         intent.putExtra("KEY_DETAIL", marker.getSnippet());
-        intent.putExtra("KEY_DETAIL_TITLE",marker.getTitle());
+        intent.putExtra("KEY_DETAIL_TITLE", marker.getTitle());
         getContext().startActivity(intent);
         return true;
     }
@@ -266,7 +265,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         return inflater.inflate(R.layout.fragment_maps, container, false);
 
 
-
     }
 
     @Override
@@ -280,7 +278,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         }
         //((MainActivity) getActivity()).setActionBarTitle("I'm Hungry!");
     }
-
 
 
 }

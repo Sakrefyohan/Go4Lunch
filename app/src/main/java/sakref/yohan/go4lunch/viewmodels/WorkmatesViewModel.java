@@ -28,9 +28,8 @@ import sakref.yohan.go4lunch.utils.WorkmatesHelper;
 public class WorkmatesViewModel extends ViewModel {
 
 
-    private MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
-    private String placeName;
-    private static String TAG = "WorkmatesViewModel";
+    private final MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
+    private static final String TAG = "WorkmatesViewModel";
 
     public void fetchWorkmates(){
 
@@ -68,17 +67,9 @@ public class WorkmatesViewModel extends ViewModel {
 
     }
 
-    public void createNotification(Boolean activate){
-
-    }
 
     public void setPlaceName(String placeName){
-        this.placeName = placeName;
     }
-
-    public String getPlaceName(){
-        Log.d(TAG, "getPlaceName: " + placeName);
-        return placeName;}
 
 
     public MutableLiveData<List<Workmates>> getWorkmates() {return mWorkmates;}

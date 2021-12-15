@@ -29,12 +29,8 @@ public class ExampleInstrumentedTest {
         assertEquals("sakref.yohan.go4lunch", appContext.getPackageName());
     }
 
-    public void doUserConnectAutomatically(){
-        clickOn(R.id.map);
-        assertDisplayed("i'm Hungry!");
-    }
-
-
-
     //todo search for barista
+
+
+
 }

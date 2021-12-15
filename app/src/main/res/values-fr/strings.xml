@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="facebook_app_id">305739077391281</string>
+    <string name="fb_login_protocol_scheme">fb305739077391281</string>
+
+
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="menu_yourlunch">RESTAURANT</string>
+    <string name="menu_settings">PARAMETRES</string>
+    <string name="menu_logout">DECONNEXION</string>
+
+    <!-- Sync Preferences -->
+    <string name="title_activity_main2">MainActivity</string>
+    <string name="title_workmates">Collègues</string>
+    <string name="title_listview">Listes</string>
+    <string name="title_mapview">Carte</string>
+
+    <string name="app_name2">Go4Lunch - YS</string>
+    <string name="error_unknown_error">Vous n\'avez pas encore choisi de restaurant.</string>
+    <string name="missing_Avatar">https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/425px-Missing_avatar.svg.png</string>
+    <string name="api_key">AIzaSyBujjCdAwqI3cLfIbUM6nRKtigecoCdn-s</string>
+    <string name="permission_denied">Veuillez vérifier votre mot de passe.</string>
+    <string name="i_m_hungry">Connexion à Twitter</string>
+    <string name="available_workmates">Collègues disponibles</string>
+    <string name="open">Ouvert</string>
+    <string name="close">Fermé</string>
+    <string name="no_information_available">Aucune information disponible</string>
+    <string name="connexion_twitter">Nouvelle photo ajoutée.</string>
+    <string name="please_fill_email_or_password">Veuillez remplir l\'email ou le mot de passe</string>
+    <string name="authentication_failed">L\'authentification a échoué.</string>
+    <string name="please_verify_email">Veuillez vérifier votre mail.</string>
+    <string name="restaurant_choice">Rappel de choix</string>
+    <string name="reminder_to_choose_a_restaurant">Rappel de choix de restaurant</string>
+    <string name="you_have_not_selected_a_restaurant_yet">Veuillez vérifier l\'URL.</string>
+    <string name="alarm_cancelled">Changement De Nom.</string>
+    <string name="are_you_sure_you_want_to_delete_your_profile">Veuillez vérifier votre pseudo.</string>
+    <string name="please_verify_password">Email Mis à Jour.</string>
+    <string name="new_picture_added">Alerte !</string>
+    <string name="please_verify_url">Oui</string>
+    <string name="name_changed">Non</string>
+    <string name="please_verify_pseudo">rejoint</string>
+    <string name="email_updated">mange à</string>
+    <string name="alert">n\'a pas encore décidé</string>
+    <string name="yes">Non Note</string>
+    <string name="no">Vous n\'avez pas encore choisi un restaurant pour le déjeuner !</string>
+    <string name="__is_joining"> mange ici</string>
+    <string name="_is_eating_at"> mange </string>
+    <string name="_hasn_t_decided_yet"> n\'a pas encore décidé</string>
+    <string name="no_note">Pas de note</string>
+    <string name="you_haven_t_chosen_a_restaurant_for_lunch_yet">Vous n\'avez pas encore choisi de restaurant pour le déjeuner!</string>
+
+</resources>

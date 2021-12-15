@@ -18,10 +18,9 @@ import sakref.yohan.go4lunch.viewmodels.WorkmatesViewModel;
 public class WorkmatesHelper {
 
 
-
     private static final String COLLECTION_NAME = "workmates";
     private static final String SUB_COLLECTION_NAME = "favrestaurant";
-    private static String TAG = "WorkmatesHelper";
+    private static final String TAG = "WorkmatesHelper";
 
     // --- COLLECTION REFERENCE ---
 
@@ -47,28 +46,28 @@ public class WorkmatesHelper {
 
     // --- GET ---
 
-    public static Task<DocumentSnapshot> getWorkmate(String uid){
+    public static Task<DocumentSnapshot> getWorkmate(String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).get();
     }
 
-    public static Task<DocumentSnapshot> getWorkmateRestaurantJoined(String uid){
+    public static Task<DocumentSnapshot> getWorkmateRestaurantJoined(String uid) {
         return WorkmatesHelper.getWorkmatesCollection().document(uid).get();
     }
 
-    public static Task<QuerySnapshot> getAllWorkmate(){
-         return WorkmatesHelper.getWorkmatesCollection().get();
+    public static Task<QuerySnapshot> getAllWorkmate() {
+        return WorkmatesHelper.getWorkmatesCollection().get();
     }
 
-    public static Task<QuerySnapshot> getAllJoiningWorkmate(String restaurantJoined){
-        return WorkmatesHelper.getWorkmatesCollection().whereEqualTo("restaurantJoined", restaurantJoined).get() ;
+    public static Task<QuerySnapshot> getAllJoiningWorkmate(String restaurantJoined) {
+        return WorkmatesHelper.getWorkmatesCollection().whereEqualTo("restaurantJoined", restaurantJoined).get();
     }
 
-    public static Task<DocumentSnapshot> getFavRestaurants(String userUid, String restaurantUid){
+    public static Task<DocumentSnapshot> getFavRestaurants(String userUid, String restaurantUid) {
         return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).document(restaurantUid).get();
     }
 
-    public static Task<QuerySnapshot> getFavRestaurant(String userUid, String restaurantUid){
-        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid",restaurantUid).get();
+    public static Task<QuerySnapshot> getFavRestaurant(String userUid, String restaurantUid) {
+        return WorkmatesHelper.getWorkmatesCollection().document(userUid).collection(SUB_COLLECTION_NAME).whereEqualTo("restaurantUid", restaurantUid).get();
     }
 
 
