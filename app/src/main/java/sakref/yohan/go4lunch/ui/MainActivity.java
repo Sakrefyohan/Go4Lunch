@@ -234,6 +234,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
+                Intent intent = new Intent(this, RestaurantDetailsActivity.class);
+                intent.putExtra("KEY_DETAIL", place.getId());
+                intent.putExtra("KEY_DETAIL_NAME", place.getName());
+                this.startActivity(intent);
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(data);
